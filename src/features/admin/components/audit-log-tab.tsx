@@ -62,7 +62,7 @@ const ENTITY_OPTIONS = [
   { value: "Organization", label: "Organização" },
 ];
 
-export function AuditLogTab({ organizationId, initialData }: AuditLogTabProps) {
+export function AuditLogTab({ organizationId: _organizationId, initialData }: AuditLogTabProps) {
   const [page, setPage] = React.useState(1);
   const [action, setAction] = React.useState("");
   const [entityType, setEntityType] = React.useState("");

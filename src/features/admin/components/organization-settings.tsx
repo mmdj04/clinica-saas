@@ -28,7 +28,6 @@ import { PageSkeleton } from "@/components/shared/skeletons";
 import { updateOrganizationSettingsAction } from "@/features/admin/actions";
 import { organizationUpdateSchema } from "@/lib/validations/organization";
 import { getOrganization } from "@/features/admin/services/admin-service";
-import { Settings } from "lucide-react";
 import type { z } from "zod";
 
 interface OrganizationSettingsProps {
@@ -102,6 +101,7 @@ export function OrganizationSettings({ organizationId, canEdit }: OrganizationSe
       }
       setLoading(false);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organizationId]);
 
   async function handleSubmit() {

@@ -36,7 +36,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Pencil, Trash2, Tag } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 
 interface CategoryManagerProps {
   open: boolean;

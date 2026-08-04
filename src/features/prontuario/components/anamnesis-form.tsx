@@ -15,7 +15,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useAnamnesis, useUpsertAnamnesis } from "../queries/prontuario";
 import type { AnamnesisContent } from "../types";

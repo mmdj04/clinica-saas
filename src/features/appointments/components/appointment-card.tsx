@@ -5,11 +5,6 @@ import { motion } from "framer-motion";
 import { Clock, User } from "lucide-react";
 import { cn, formatTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import type { AppointmentWithRelations } from "../types";
 import { STATUS_LABELS, STATUS_VARIANT, TYPE_LABELS } from "../types";
 

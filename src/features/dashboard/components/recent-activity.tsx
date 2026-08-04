@@ -6,7 +6,6 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { formatDate } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {

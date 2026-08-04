@@ -1,8 +1,7 @@
 "use client";
 
-import { User, Calendar, Clock, FileText, Pill, TestTube, Upload } from "lucide-react";
+import { User, Calendar, Clock, FileText, Pill, TestTube } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePatientSummary, usePatientStats } from "../queries/prontuario";

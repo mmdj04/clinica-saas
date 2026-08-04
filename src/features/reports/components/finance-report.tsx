@@ -10,7 +10,7 @@ import {
   ReportPieChart,
   ReportBarChart,
 } from "./report-chart";
-import { formatCurrency, formatNumber } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import type { DateRange } from "../types";
 
 interface FinanceReportProps {

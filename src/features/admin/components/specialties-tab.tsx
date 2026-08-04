@@ -69,7 +69,7 @@ interface SpecialtiesTabProps {
 
 type SpecialtyFormValues = z.infer<typeof specialtyCreateSchema>;
 
-export function SpecialtiesTab({ organizationId, canEdit, initialData }: SpecialtiesTabProps) {
+export function SpecialtiesTab({ organizationId: _organizationId, canEdit, initialData }: SpecialtiesTabProps) {
   const router = useRouter();
   const { data: specialties } = useSpecialties(initialData);
 

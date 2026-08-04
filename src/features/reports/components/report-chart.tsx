@@ -26,7 +26,6 @@ import {
   Cell,
   LineChart,
   Line,
-  ResponsiveContainer,
 } from "recharts";
 import { formatCurrency, formatNumber } from "@/lib/utils";
 

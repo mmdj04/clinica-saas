@@ -29,7 +29,7 @@ interface FinanceOverviewProps {
 }
 
 export function FinanceOverview({ organizationId, range }: FinanceOverviewProps) {
-  const { data: summary, isLoading: loadingSummary } = useTransactionSummary(
+  const { data: summary } = useTransactionSummary(
     organizationId,
     range,
   );
@@ -47,15 +47,6 @@ export function FinanceOverview({ organizationId, range }: FinanceOverviewProps)
     organizationId,
     range,
     "EXPENSE",
-  );
-
-  const totalRevenueCategories = (revenueCategories ?? []).reduce(
-    (acc, c) => acc + c.total,
-    0,
-  );
-  const totalExpenseCategories = (expenseCategories ?? []).reduce(
-    (acc, c) => acc + c.total,
-    0,
   );
 
   return (

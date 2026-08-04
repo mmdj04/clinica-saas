@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Building2, Check, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+
 import type { ShellContext } from "@/types/shell";
 
 export function OrganizationSwitcher({ context }: { context: ShellContext }) {

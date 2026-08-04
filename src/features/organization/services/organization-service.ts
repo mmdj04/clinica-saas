@@ -60,7 +60,6 @@ export async function createOrganization(params: CreateOrganizationParams) {
 async function ensureUniqueSlug(base: string): Promise<string> {
   let slug = base;
   let tries = 0;
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const existing = await prisma.organization.findUnique({
       where: { slug },

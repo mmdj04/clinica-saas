@@ -87,7 +87,7 @@ const ROLE_BADGE_VARIANT: Record<string, "default" | "secondary" | "success" | "
   READONLY: "secondary",
 };
 
-export function MembersTab({ organizationId, canEdit, initialData }: MembersTabProps) {
+export function MembersTab({ organizationId: _organizationId, canEdit, initialData }: MembersTabProps) {
   const router = useRouter();
   const { data: members } = useMembers(initialData);
 

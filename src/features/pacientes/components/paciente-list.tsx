@@ -21,7 +21,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 import type { PatientListItem } from "@/features/pacientes/types";
 import { createPatientColumns } from "./paciente-columns";
 

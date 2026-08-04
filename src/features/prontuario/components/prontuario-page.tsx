@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   Stethoscope,
   FileText,
-  Clock,
   Pill,
   TestTube,
   Upload,

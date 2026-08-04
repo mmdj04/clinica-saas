@@ -2,7 +2,6 @@
 
 import {
   Upload,
-  Download,
   FileText,
   Image,
   File,

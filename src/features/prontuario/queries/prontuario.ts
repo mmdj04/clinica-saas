@@ -16,8 +16,6 @@ import {
   listAttachmentsAction,
 } from "../actions";
 import type {
-  PatientSearchResult,
-  PatientSummary,
   AnamnesisContent,
   EvolutionType,
   PrescriptionItem,

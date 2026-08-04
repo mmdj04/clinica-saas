@@ -69,7 +69,7 @@ interface RoomsTabProps {
 
 type RoomFormValues = z.infer<typeof roomCreateSchema>;
 
-export function RoomsTab({ organizationId, canEdit, initialData }: RoomsTabProps) {
+export function RoomsTab({ organizationId: _organizationId, canEdit, initialData }: RoomsTabProps) {
   const router = useRouter();
   const { data: rooms } = useRooms(initialData);
 

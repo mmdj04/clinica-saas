@@ -2,14 +2,11 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, User, FileText, ArrowRight } from "lucide-react";
+import { Search, FileText, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Skeleton } from "@/components/ui/skeleton";
 import { usePatientSearch } from "@/features/prontuario/queries/prontuario";
 import { getInitials } from "@/lib/utils";
 

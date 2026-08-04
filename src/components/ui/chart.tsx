@@ -67,7 +67,7 @@ function ChartStyle({ id, config }: { id: string; config: ChartConfig }) {
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(
-            ([theme, prefix]) => `
+            ([_theme, prefix]) => `
 ${prefix} [data-chart=${id}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
@@ -98,6 +98,7 @@ const ChartTooltipContent = React.forwardRef<
       indicator?: "line" | "dot" | "dashed";
       nameKey?: string;
       labelKey?: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       valueFormatter?: (value: any) => string;
     }
 >(
@@ -293,6 +294,7 @@ ChartLegendContent.displayName = "ChartLegend";
 
 function getPayloadConfigFromPayload(
   config: ChartConfig,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: any,
   key: string,
 ) {

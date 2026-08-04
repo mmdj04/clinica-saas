@@ -5,7 +5,6 @@ import {
   subMonths,
   format,
   eachMonthOfInterval,
-  eachDayOfInterval,
   getDay,
   getHours,
   startOfDay,

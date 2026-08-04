@@ -57,15 +57,6 @@ export function CommissionPanel({ organizationId }: CommissionPanelProps) {
     });
   }
 
-  function toggleSelectAll() {
-    const pending = pendingCommissions ?? [];
-    if (selectedIds.size === pending.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(pending.map((c) => c.id)));
-    }
-  }
-
   async function handlePay() {
     const ids = Array.from(selectedIds);
     if (ids.length === 0) {

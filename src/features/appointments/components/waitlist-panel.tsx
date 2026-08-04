@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { User, Clock, Trash2, Check, Phone } from "lucide-react";
+import { Clock, Trash2, Phone } from "lucide-react";
 import { waitlistCreateSchema } from "@/lib/validations/appointment";
 import { cn, formatPhone } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

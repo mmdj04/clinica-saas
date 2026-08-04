@@ -19,16 +19,12 @@ import {
   deleteWaitingListEntry,
 } from "./services/appointment-service";
 
-function getOrgId(session: { user: unknown }) {
-  return (session.user as { organizationId?: string }).organizationId ?? null;
-}
-
 export async function createAppointmentAction(
   organizationId: string,
   _prev: unknown,
   formData: FormData,
 ) {
-  const session = await requireAuth();
+  await requireAuth();
 
   const parsed = appointmentCreateSchema.safeParse({
     patientId: formData.get("patientId"),
@@ -68,7 +64,7 @@ export async function updateAppointmentAction(
   _prev: unknown,
   formData: FormData,
 ) {
-  const session = await requireAuth();
+  await requireAuth();
 
   const parsed = appointmentUpdateSchema.safeParse({
     patientId: formData.get("patientId") || undefined,

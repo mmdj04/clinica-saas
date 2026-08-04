@@ -1,6 +1,6 @@
 "use client";
 
-import { TestTube, Download, ExternalLink } from "lucide-react";
+import { TestTube, ExternalLink } from "lucide-react";
 import {
   Table,
   TableBody,

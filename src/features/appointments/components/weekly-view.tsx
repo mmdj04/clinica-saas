@@ -13,7 +13,7 @@ import {
   getMinutes,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { cn, formatTime } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AppointmentCard } from "./appointment-card";
 import type { AppointmentWithRelations } from "../types";
@@ -26,7 +26,6 @@ interface WeeklyViewProps {
 }
 
 const HOUR_HEIGHT = 48;
-const DAY_HEADER_HEIGHT = 52;
 
 function getAppointmentTop(startAt: string | Date) {
   const start = new Date(startAt);

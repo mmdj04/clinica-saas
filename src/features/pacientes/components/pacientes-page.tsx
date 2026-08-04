@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Plus, User, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import { PageSkeleton } from "@/components/shared/skeletons";
 import { PacienteList } from "./paciente-list";
 import { PacienteForm } from "./paciente-form";
 import { PacienteDetail } from "./paciente-detail";
-import { TagList, type TagItem } from "./tag-list";
+import { type TagItem } from "./tag-list";
 import {
   Select,
   SelectContent,
@@ -40,7 +39,6 @@ interface PacientesPageProps {
 }
 
 export function PacientesPage({ tags }: PacientesPageProps) {
-  const router = useRouter();
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<PatientStatus | "all">("all");
   const [tagFilter, setTagFilter] = React.useState<string>("");

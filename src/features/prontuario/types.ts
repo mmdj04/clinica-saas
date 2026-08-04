@@ -4,7 +4,6 @@ import type {
   Prescription,
   Exam,
   Attachment,
-  Patient,
   Professional,
 } from "@prisma/client";
 

@@ -1,9 +1,7 @@
 "use client";
 
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Clock, User } from "lucide-react";
+import { FileText, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";

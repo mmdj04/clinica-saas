@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireAuth, requireOrg } from "@/lib/auth-guard";
-import { prisma } from "@/lib/prisma";
+import { requireOrg } from "@/lib/auth-guard";
 import { runWithTenant } from "@/lib/multi-tenancy";
 import { recordAudit } from "@/lib/audit";
 import {

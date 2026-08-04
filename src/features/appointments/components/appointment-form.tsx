@@ -9,7 +9,6 @@ import {
   appointmentCreateSchema,
   appointmentUpdateSchema,
 } from "@/lib/validations/appointment";
-import type { AppointmentCreateInput } from "@/lib/validations/appointment";
 import {
   createAppointmentAction,
   updateAppointmentAction,
@@ -18,7 +17,6 @@ import type { AppointmentWithRelations } from "../types";
 import { TYPE_LABELS } from "../types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,

@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { format, isSameDay, getHours, getMinutes } from "date-fns";
-import { cn, formatTime } from "@/lib/utils";
+import { isSameDay, getHours, getMinutes } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AppointmentCard } from "./appointment-card";
 import type { AppointmentWithRelations } from "../types";

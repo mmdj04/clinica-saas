@@ -6,8 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AlertDialog,
@@ -21,7 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { PacienteForm } from "@/features/pacientes/components/paciente-form";
 import { toast } from "sonner";
-import { formatDate, formatPhone, formatCPF, getInitials } from "@/lib/utils";
+import { formatDate, formatPhone, formatCPF } from "@/lib/utils";
 import { GENDER_LABELS, STATUS_LABELS } from "@/features/pacientes/types";
 import { deletePatientAction } from "@/features/pacientes/actions";
 import type { PatientListItem, PatientStatus, PatientGender } from "@/features/pacientes/types";

@@ -19,7 +19,6 @@ import {
   Mail,
   FileText,
   Calendar,
-  Heart,
   Shield,
   MapPin,
   Edit,

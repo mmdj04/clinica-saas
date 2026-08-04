@@ -10,7 +10,6 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { DataTable } from "@/components/shared/data-table";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
@@ -22,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Wallet, Plus, Download, Filter } from "lucide-react";
+import { Wallet, Plus, Download } from "lucide-react";
 import { useTransactions } from "@/features/finance/queries/finance";
 import { getTransactionColumns } from "@/features/finance/components/transaction-columns";
 import { TransactionForm } from "@/features/finance/components/transaction-form";

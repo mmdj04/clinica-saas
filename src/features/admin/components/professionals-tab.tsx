@@ -79,7 +79,7 @@ interface ProfessionalsTabProps {
 type ProfessionalFormValues = z.infer<typeof professionalCreateSchema>;
 
 export function ProfessionalsTab({
-  organizationId,
+  organizationId: _organizationId,
   canEdit,
   initialData,
   specialtiesData,

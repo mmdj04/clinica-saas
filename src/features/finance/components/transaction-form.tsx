@@ -35,7 +35,6 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import type { TransactionWithRelations } from "@/features/finance/types";
 
 interface TransactionFormProps {
