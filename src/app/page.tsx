@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { isDemo } from "@/lib/demo";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +27,7 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen overflow-hidden">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-primary/10 via-transparent to-transparent" />
       <header className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
         <div className="flex items-center gap-2">
@@ -36,6 +37,7 @@ export default async function HomePage() {
           <span className="font-semibold tracking-tight">Clínica SaaS</span>
         </div>
         <nav className="flex items-center gap-2">
+          <ThemeToggle />
           <Link href="/login">
             <Button variant="ghost" size="sm">
               Entrar

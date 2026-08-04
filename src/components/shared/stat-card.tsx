@@ -15,7 +15,7 @@ export interface StatCardProps {
 }
 
 const accentMap = {
-  primary: "from-violet-500/15",
+  primary: "from-muted-foreground/15",
   success: "from-emerald-500/15",
   danger: "from-rose-500/15",
   warning: "from-amber-500/15",

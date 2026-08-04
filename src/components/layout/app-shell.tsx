@@ -87,7 +87,7 @@ export function AppShell({ context, role, children }: AppShellProps) {
           </div>
         </header>
 
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 overflow-x-hidden">
           <main className="mx-auto w-full max-w-[1400px] px-4 py-6 md:px-6">
             {children}
           </main>

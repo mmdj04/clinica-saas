@@ -30,7 +30,7 @@ const typeStyles: Record<string, string> = {
   appointment: "bg-sky-500",
   payment: "bg-emerald-500",
   alert: "bg-rose-500",
-  system: "bg-violet-500",
+  system: "bg-muted-foreground",
   info: "bg-slate-500",
 };
 
