@@ -1,0 +1,639 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ────────────────────────────────────────────────────────────────
+// MULTI-TENANCY
+// Cada organização (clínica) é um tenant SaaS. Toda entidade
+// de negócio carrega `organizationId` e índices compostos para
+// isolamento e performance.
+// ────────────────────────────────────────────────────────────────
+
+enum Role {
+  OWNER
+  ADMIN
+  STAFF
+  RECEPTION
+  READONLY
+}
+
+enum UserStatus {
+  ACTIVE
+  INVITED
+  SUSPENDED
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  passwordHash  String?
+  twoFactorEnabled Boolean @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  memberships     OrganizationMember[]
+  professionals   Professional[]
+  attachments     Attachment[]
+  auditLogs       AuditLog[]
+  createdPatients Patient[] @relation("PatientCreatedBy")
+  sessions        session[]
+  accounts        account[]
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  cnpj        String?
+  logoUrl     String?
+  primaryColor String? @default("#7c3aed")
+  plan        String   @default("starter")
+  status      String   @default("active")
+  settings    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members        OrganizationMember[]
+  patients       Patient[]
+  specialties    Specialty[]
+  rooms          Room[]
+  professionals  Professional[]
+  appointments   Appointment[]
+  waitingList    WaitingListEntry[]
+  transactions   Transaction[]
+  financeCategories FinanceCategory[]
+  commissions    Commission[]
+  anamnesis      Anamnesis[]
+  evolutions     Evolution[]
+  prescriptions  Prescription[]
+  exams          Exam[]
+  attachments    Attachment[]
+  patientTags    PatientTag[]
+  auditLogs      AuditLog[]
+  notifications  Notification[]
+}
+
+model OrganizationMember {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  role           Role     @default(STAFF)
+  status         UserStatus @default(ACTIVE)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+}
+
+// ────────────────────────────────────────────────────────────────
+// CADASTRO TÉCNICO
+// ────────────────────────────────────────────────────────────────
+
+model Specialty {
+  id            String   @id @default(cuid())
+  organizationId String
+  name          String
+  color         String   @default("#7c3aed")
+  durationMinutes Int    @default(30)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  professionals Professional[]
+  appointments  Appointment[]
+  waitingList   WaitingListEntry[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+model Room {
+  id            String   @id @default(cuid())
+  organizationId String
+  name          String
+  color         String   @default("#0ea5e9")
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  appointments  Appointment[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+model Professional {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String?
+  name           String
+  email          String?
+  phone          String?
+  documentNumber String? // CRM / CRO / CRP
+  specialtyId    String?
+  color          String   @default("#f59e0b")
+  commissionRate Decimal  @default(0) // 0..1 (50% = 0.5)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization  Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  specialty     Specialty?        @relation(fields: [specialtyId], references: [id], onDelete: SetNull)
+  appointments  Appointment[]
+  commissions   Commission[]
+  evolutions    Evolution[]
+  prescriptions Prescription[]
+  exams         Exam[]
+  anamnesis     Anamnesis[]
+  waitingList   WaitingListEntry[]
+  transactions  Transaction[]
+
+  @@index([organizationId, specialtyId])
+}
+
+// ────────────────────────────────────────────────────────────────
+// PACIENTES
+// ────────────────────────────────────────────────────────────────
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  NOT_INFORMED
+}
+
+model Patient {
+  id               String   @id @default(cuid())
+  organizationId   String
+  name             String
+  email            String?
+  phone            String?
+  cpf              String?
+  rg               String?
+  birthDate        DateTime?
+  gender           Gender   @default(NOT_INFORMED)
+  photoUrl         String?
+  // Endereço
+  cep              String?
+  address          String?
+  city             String?
+  state            String?
+  // Plano de saúde
+  insuranceProvider String?
+  insuranceNumber  String?
+  // Emergência
+  emergencyContact String?
+  emergencyPhone   String?
+  // Responsável (menores)
+  responsibleName  String?
+  responsiblePhone String?
+  // Observações e origem
+  notes            String?
+  source           String?
+  status           String   @default("active") // active | inactive | blocked
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  createdById      String?
+
+  organization  Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy     User?           @relation("PatientCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  tags          PatientTagLink[]
+  appointments  Appointment[]
+  waitingList   WaitingListEntry[]
+  transactions  Transaction[]
+  anamnesis     Anamnesis[]
+  evolutions    Evolution[]
+  prescriptions Prescription[]
+  exams         Exam[]
+  attachments   Attachment[]
+
+  @@index([organizationId, name])
+  @@index([organizationId, phone])
+  @@index([organizationId, cpf])
+  @@index([organizationId, createdAt])
+}
+
+model PatientTag {
+  id            String   @id @default(cuid())
+  organizationId String
+  name          String
+  color         String   @default("#06b6d4")
+  createdAt     DateTime @default(now())
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  patients     PatientTagLink[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+model PatientTagLink {
+  patientId String
+  tagId     String
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  tag     PatientTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([patientId, tagId])
+  @@index([tagId])
+}
+
+// ────────────────────────────────────────────────────────────────
+// AGENDA / CONSULTAS
+// ────────────────────────────────────────────────────────────────
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum AppointmentType {
+  FIRST_VISIT
+  RETURN
+  EXAM
+  FOLLOW_UP
+}
+
+enum PaymentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  CANCELLED
+}
+
+model Appointment {
+  id             String   @id @default(cuid())
+  organizationId String
+  patientId      String
+  professionalId String
+  roomId         String?
+  specialtyId    String?
+  startAt        DateTime
+  endAt          DateTime
+  status         AppointmentStatus @default(SCHEDULED)
+  type           AppointmentType   @default(RETURN)
+  paymentStatus  PaymentStatus     @default(PENDING)
+  price          Decimal  @default(0)
+  notes          String?
+  cancelReason   String?
+  cancelledAt    DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  patient      Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  room         Room?        @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  specialty    Specialty?   @relation(fields: [specialtyId], references: [id], onDelete: SetNull)
+  transactions Transaction[]
+  evolutions   Evolution[]
+
+  @@index([organizationId, startAt])
+  @@index([organizationId, professionalId, startAt])
+  @@index([organizationId, patientId])
+  @@index([organizationId, status])
+}
+
+model WaitingListEntry {
+  id            String    @id @default(cuid())
+  organizationId String
+  patientId     String
+  professionalId String?
+  specialtyId   String?
+  preferredDate DateTime?
+  priority      Int       @default(1)
+  notes         String?
+  status        String    @default("waiting") // waiting | contacted | confirmed | cancelled
+  createdAt     DateTime  @default(now())
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  patient      Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  professional Professional?    @relation(fields: [professionalId], references: [id], onDelete: SetNull)
+  specialty    Specialty?       @relation(fields: [specialtyId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, status])
+  @@index([patientId])
+}
+
+// ────────────────────────────────────────────────────────────────
+// FINANCEIRO
+// ────────────────────────────────────────────────────────────────
+
+enum TransactionType {
+  REVENUE
+  EXPENSE
+}
+
+enum PaymentMethod {
+  PIX
+  CARD
+  CASH
+  TRANSFER
+  OTHER
+  HEALTH_PLAN
+}
+
+enum TransactionStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model FinanceCategory {
+  id             String   @id @default(cuid())
+  organizationId String
+  type           TransactionType
+  name           String
+  color          String   @default("#64748b")
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@unique([organizationId, type, name])
+  @@index([organizationId, type])
+}
+
+model Transaction {
+  id             String   @id @default(cuid())
+  organizationId String
+  type           TransactionType
+  categoryId     String?
+  amount         Decimal
+  paymentMethod  PaymentMethod @default(OTHER)
+  status         TransactionStatus @default(PENDING)
+  date           DateTime
+  dueDate        DateTime?
+  description    String
+  reference      String? // código PIX / NSU / NF
+  appointmentId  String?
+  patientId      String?
+  professionalId String?
+  commissionRate Decimal? // 0..1
+  commissionAmount Decimal? @default(0)
+  receiptUrl     String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category     FinanceCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  appointment  Appointment?    @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  patient      Patient?        @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  professional Professional?   @relation(fields: [professionalId], references: [id], onDelete: SetNull)
+  commissions  Commission[]
+
+  @@index([organizationId, type, date])
+  @@index([organizationId, status])
+  @@index([organizationId, appointmentId])
+  @@index([organizationId, patientId])
+}
+
+model Commission {
+  id             String   @id @default(cuid())
+  organizationId String
+  transactionId  String
+  professionalId String
+  rate           Decimal
+  amount         Decimal
+  status         String   @default("PENDING") // PENDING | PAID
+  paidAt         DateTime?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  transaction  Transaction  @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@unique([transactionId, professionalId])
+  @@index([organizationId, professionalId, status])
+}
+
+// ────────────────────────────────────────────────────────────────
+// PRONTUÁRIO
+// ────────────────────────────────────────────────────────────────
+
+model Anamnesis {
+  id             String   @id @default(cuid())
+  organizationId String
+  patientId      String
+  professionalId String?
+  content        Json // formulário estruturado (queixa, histórico, alergias, medicações...)
+  version        Int      @default(1)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  patient      Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  professional Professional? @relation(fields: [professionalId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, patientId])
+}
+
+enum EvolutionType {
+  INITIAL
+  EVOLUTION
+  PROFESSIONAL_NOTE
+  DISCHARGE
+}
+
+model Evolution {
+  id             String   @id @default(cuid())
+  organizationId String
+  patientId      String
+  appointmentId  String?
+  professionalId String
+  type           EvolutionType @default(EVOLUTION)
+  content        String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  patient      Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointment  Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, patientId, createdAt])
+}
+
+model Prescription {
+  id             String   @id @default(cuid())
+  organizationId String
+  patientId      String
+  professionalId String
+  items          Json // [{ medicine, dosage, frequency, duration }]
+  guidelines     String?
+  validDays      Int      @default(10)
+  issuedAt       DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  patient      Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, patientId, issuedAt])
+}
+
+model Exam {
+  id             String   @id @default(cuid())
+  organizationId String
+  patientId      String
+  professionalId String?
+  name           String
+  category       String? // laboratorial | imagem | cardiologia | outros
+  fileUrl        String?
+  orderedAt      DateTime?
+  resultDate     DateTime?
+  summary        String?
+  status         String   @default("ordered") // ordered | collected | ready | delivered
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  patient      Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  professional Professional? @relation(fields: [professionalId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, patientId, status])
+}
+
+enum AttachmentCategory {
+  DOCUMENT
+  PHOTO
+  EXTERNAL_REPORT
+  EXAM
+  RECEIPT
+  OTHER
+}
+
+model Attachment {
+  id             String   @id @default(cuid())
+  organizationId String
+  patientId      String
+  appointmentId  String?
+  uploadedById   String?
+  name           String
+  fileUrl        String
+  mimeType       String
+  size           Int
+  category       AttachmentCategory @default(OTHER)
+  notes          String?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  patient      Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  uploadedBy   User?        @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, patientId, category])
+}
+
+// ────────────────────────────────────────────────────────────────
+// AUDITORIA & NOTIFICAÇÕES
+// ────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id             String   @id @default(cuid())
+  organizationId String?
+  actorId        String?
+  action         String   // patient.create, appointment.update ...
+  entityType     String
+  entityId       String?
+  metadata       Json?
+  ip             String?
+  userAgent      String?
+  createdAt      DateTime @default(now())
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actor        User?         @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([entityType, entityId])
+  @@index([actorId])
+}
+
+model Notification {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String?
+  type           String   @default("info") // appointment | payment | system | alert
+  title          String
+  body           String?
+  data           Json?
+  readAt         DateTime?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, userId, readAt])
+  @@index([createdAt])
+}
+
+// ────────────────────────────────────────────────────────────────
+// BETTER AUTH
+// Tabelas gerenciadas pela lib `better-auth` (autenticação/sessões).
+// O model `User` é mapeado via `user.modelName` no servidor de auth.
+// ────────────────────────────────────────────────────────────────
+
+model session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
