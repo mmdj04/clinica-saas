@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Plus, Loader2 } from "lucide-react";
@@ -51,7 +51,7 @@ export function ExamForm({ patientId }: ExamFormProps) {
   const createMutation = useCreateExam();
 
   const form = useForm<ExamFormValues>({
-    resolver: zodResolver(examFormSchema),
+    resolver: zodResolver(examFormSchema) as Resolver<ExamFormValues>,
     defaultValues: {
       name: "",
       category: "",

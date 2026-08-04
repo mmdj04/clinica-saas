@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
@@ -67,7 +67,7 @@ export function OrganizationSettings({ organizationId, canEdit }: OrganizationSe
   const slotMinutes = (settings.slotMinutes as number) ?? 30;
 
   const form = useForm<OrgFormValues>({
-    resolver: zodResolver(organizationUpdateSchema),
+    resolver: zodResolver(organizationUpdateSchema) as Resolver<OrgFormValues>,
     defaultValues: {
       name: "",
       cnpj: "",

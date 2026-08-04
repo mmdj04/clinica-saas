@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFormState, useFormStatus } from "react-dom";
 import { Loader2 } from "lucide-react";
@@ -36,7 +36,7 @@ export function OnboardForm() {
   const [state, formAction] = useFormState(createOrganizationAction, undefined);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(organizationCreateSchema),
+    resolver: zodResolver(organizationCreateSchema) as Resolver<FormValues>,
     defaultValues: { name: "", slug: "", cnpj: "", primaryColor: "#7c3aed" },
   });
 

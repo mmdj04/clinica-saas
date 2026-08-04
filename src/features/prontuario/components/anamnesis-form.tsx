@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Save, Loader2 } from "lucide-react";
@@ -84,7 +84,7 @@ export function AnamnesisForm({ patientId }: AnamnesisFormProps) {
   const upsertMutation = useUpsertAnamnesis();
 
   const form = useForm<AnamnesisFormValues>({
-    resolver: zodResolver(anamnesisFormSchema),
+    resolver: zodResolver(anamnesisFormSchema) as Resolver<AnamnesisFormValues>,
     defaultValues: {
       chiefComplaint: "",
       presentIllnessHistory: "",

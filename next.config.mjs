@@ -1,14 +1,10 @@
-import { resolve } from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = fileURLToPath(new URL(".", import.meta.url));
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   output: "standalone",
-  serverExternalPackages: ["better-auth", "@better-auth/core", "@better-auth/prisma-adapter"],
+  turbopack: {},
+  serverExternalPackages: ["better-auth", "@better-auth/core", "@better-auth/prisma-adapter", "pg", "@prisma/adapter-pg"],
   experimental: {
     serverActions: {
       bodySizeLimit: "2mb",
@@ -25,25 +21,6 @@ const nextConfig = {
         hostname: "avatars.githubusercontent.com",
       },
     ],
-  },
-  webpack: (config) => {
-    config.resolve.alias["@better-auth/core/utils"] = resolve(
-      __dirname,
-      "node_modules/@better-auth/core/dist/utils"
-    );
-    config.resolve.alias["@better-auth/core/utils/string"] = resolve(
-      __dirname,
-      "node_modules/@better-auth/core/dist/utils/string.mjs"
-    );
-    config.resolve.alias["@better-auth/core/utils/url"] = resolve(
-      __dirname,
-      "node_modules/@better-auth/core/dist/utils/url.mjs"
-    );
-    config.resolve.alias["@better-auth/core/utils/ip"] = resolve(
-      __dirname,
-      "node_modules/@better-auth/core/dist/utils/ip.mjs"
-    );
-    return config;
   },
   async headers() {
     return [

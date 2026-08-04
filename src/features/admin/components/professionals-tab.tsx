@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
@@ -93,7 +93,7 @@ export function ProfessionalsTab({
   const [pending, setPending] = React.useState(false);
 
   const form = useForm<ProfessionalFormValues>({
-    resolver: zodResolver(professionalCreateSchema),
+    resolver: zodResolver(professionalCreateSchema) as Resolver<ProfessionalFormValues>,
     defaultValues: {
       name: "",
       email: "",

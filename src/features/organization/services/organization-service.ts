@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
 import type { Prisma } from "@prisma/client";

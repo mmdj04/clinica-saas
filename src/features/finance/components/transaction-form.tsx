@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { transactionCreateSchema } from "@/lib/validations/finance";
+import { transactionCreateSchema, type TransactionCreateInput } from "@/lib/validations/finance";
 import {
   createTransactionAction,
   updateTransactionAction,
@@ -58,14 +58,14 @@ export function TransactionForm({
   const [loading, setLoading] = React.useState(false);
   const isEditing = !!editingTransaction;
 
-  const form = useForm({
-    resolver: zodResolver(transactionCreateSchema),
+  const form = useForm<TransactionCreateInput>({
+    resolver: zodResolver(transactionCreateSchema) as Resolver<TransactionCreateInput>,
     defaultValues: {
-      type: ("REVENUE" as "REVENUE" | "EXPENSE"),
+      type: "REVENUE",
       categoryId: "",
       amount: 0,
-      paymentMethod: "OTHER" as string,
-      status: "PENDING" as string,
+      paymentMethod: "OTHER",
+      status: "PENDING",
       date: new Date().toISOString(),
       dueDate: "",
       description: "",

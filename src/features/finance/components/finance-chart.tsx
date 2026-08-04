@@ -111,6 +111,10 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
 
   const total = data.reduce((acc, d) => acc + d.total, 0);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pieLabel = ({ name, percent }: any) =>
+    `${name} ${((percent ?? 0) * 100).toFixed(0)}%`;
+
   return (
     <div className="flex flex-col items-center gap-4 sm:flex-row">
       <div className="h-[280px] w-full flex-1">
@@ -125,9 +129,7 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
               outerRadius={100}
               innerRadius={50}
               paddingAngle={2}
-              label={({ name, percent }) =>
-                `${name} ${(percent * 100).toFixed(0)}%`
-              }
+              label={pieLabel}
               labelLine={false}
             >
               {data.map((entry, index) => (
@@ -138,7 +140,7 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
               ))}
             </Pie>
             <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
+              formatter={((value: any) => formatCurrency(Number(value))) as any}
             />
           </PieChart>
         </ResponsiveContainer>

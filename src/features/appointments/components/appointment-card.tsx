@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Clock, User } from "lucide-react";
 import { cn, formatTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";

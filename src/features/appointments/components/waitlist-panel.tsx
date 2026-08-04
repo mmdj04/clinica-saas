@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Clock, Trash2, Phone } from "lucide-react";
 import { waitlistCreateSchema } from "@/lib/validations/appointment";
+import type { z } from "zod";
 import { cn, formatPhone } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,8 +80,8 @@ export function WaitlistPanel({
   const [deleteTarget, setDeleteTarget] =
     React.useState<WaitingListEntryWithRelations | null>(null);
 
-  const form = useForm({
-    resolver: zodResolver(waitlistCreateSchema),
+  const form = useForm<z.infer<typeof waitlistCreateSchema>>({
+    resolver: zodResolver(waitlistCreateSchema) as Resolver<z.infer<typeof waitlistCreateSchema>>,
     defaultValues: {
       patientId: "",
       professionalId: "",

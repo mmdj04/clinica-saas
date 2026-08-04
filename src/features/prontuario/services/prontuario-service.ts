@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 import { getTenant } from "@/lib/multi-tenancy";
 import type {

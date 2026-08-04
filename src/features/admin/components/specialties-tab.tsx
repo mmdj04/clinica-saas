@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
@@ -79,7 +79,7 @@ export function SpecialtiesTab({ organizationId: _organizationId, canEdit, initi
   const [pending, setPending] = React.useState(false);
 
   const form = useForm<SpecialtyFormValues>({
-    resolver: zodResolver(specialtyCreateSchema),
+    resolver: zodResolver(specialtyCreateSchema) as Resolver<SpecialtyFormValues>,
     defaultValues: { name: "", color: "#7c3aed", durationMinutes: 30 },
   });
 

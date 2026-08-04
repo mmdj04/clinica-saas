@@ -48,7 +48,7 @@ export default async function AppLayout({
       plan: current.organization.plan,
     },
     role: current.role as Role,
-    memberships: memberships.map((m) => ({
+    memberships: memberships.map((m: (typeof memberships)[number]) => ({
       organizationId: m.organization.id,
       role: m.role,
       organization: {

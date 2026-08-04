@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 import type { PatientStatus } from "@/features/pacientes/types";
 import type { Prisma } from "@prisma/client";

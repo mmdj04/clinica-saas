@@ -1,13 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {
   appointmentCreateSchema,
   appointmentUpdateSchema,
+  type AppointmentCreateInput,
 } from "@/lib/validations/appointment";
 import {
   createAppointmentAction,
@@ -90,10 +91,10 @@ export function AppointmentForm({
         return format(d, "yyyy-MM-dd'T'HH:mm");
       })();
 
-  const form = useForm({
+  const form = useForm<AppointmentCreateInput>({
     resolver: zodResolver(
       isEditing ? appointmentUpdateSchema : appointmentCreateSchema,
-    ),
+    ) as Resolver<AppointmentCreateInput>,
     defaultValues: {
       patientId: appointment?.patientId ?? "",
       professionalId: appointment?.professionalId ?? "",

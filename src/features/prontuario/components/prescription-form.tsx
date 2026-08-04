@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Plus, Trash2, Loader2, Pill } from "lucide-react";
@@ -55,7 +55,7 @@ export function PrescriptionForm({ patientId }: PrescriptionFormProps) {
   const createMutation = useCreatePrescription();
 
   const form = useForm<PrescriptionFormValues>({
-    resolver: zodResolver(prescriptionFormSchema),
+    resolver: zodResolver(prescriptionFormSchema) as Resolver<PrescriptionFormValues>,
     defaultValues: {
       items: [{ ...DEFAULT_ITEM }],
       guidelines: "",

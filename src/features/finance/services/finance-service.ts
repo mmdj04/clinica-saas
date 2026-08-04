@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 import type { TransactionWithRelations, CommissionWithProfessional, CategoryBreakdown, MonthlyData, TransactionSummary } from "@/features/finance/types";

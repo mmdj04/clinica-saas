@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
@@ -79,7 +79,7 @@ export function RoomsTab({ organizationId: _organizationId, canEdit, initialData
   const [pending, setPending] = React.useState(false);
 
   const form = useForm<RoomFormValues>({
-    resolver: zodResolver(roomCreateSchema),
+    resolver: zodResolver(roomCreateSchema) as Resolver<RoomFormValues>,
     defaultValues: { name: "", color: "#0ea5e9" },
   });
 

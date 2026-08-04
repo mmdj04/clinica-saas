@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { patientCreateSchema } from "@/lib/validations/patient";
 import type { PatientCreateInput } from "@/lib/validations/patient";
@@ -56,7 +56,7 @@ export function PacienteForm({ open, onOpenChange, patient, tags }: PacienteForm
   const [submitting, setSubmitting] = React.useState(false);
 
   const form = useForm<PatientCreateInput>({
-    resolver: zodResolver(patientCreateSchema),
+    resolver: zodResolver(patientCreateSchema) as Resolver<PatientCreateInput>,
     defaultValues: {
       name: patient?.name ?? "",
       email: patient?.email ?? "",

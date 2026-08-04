@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { isSameDay, getHours, getMinutes } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AppointmentCard } from "./appointment-card";

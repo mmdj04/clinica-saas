@@ -44,9 +44,10 @@ yarn-error.log*
 
 # prisma
 /prisma/*.db
+/prisma/generated/
 
 # storybook
 /storybook-static
 
 # turbo
-.turbo
+.turboprisma/generated/
