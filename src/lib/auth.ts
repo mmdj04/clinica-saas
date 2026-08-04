@@ -36,9 +36,10 @@ export const auth = betterAuth({
       path: "/",
     },
   },
-  trustedOrigins: process.env.BETTER_AUTH_URL
-    ? [process.env.BETTER_AUTH_URL]
-    : [],
+  trustedOrigins: [
+    process.env.BETTER_AUTH_URL,
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
+  ].filter(Boolean) as string[],
   rateLimit: {
     enabled: true,
     window: 60_000,
