@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 import type { TransactionWithRelations, CommissionWithProfessional, CategoryBreakdown, MonthlyData, TransactionSummary } from "@/features/finance/types";
+import { isDemo, demoTransactions, demoPatients } from "@/lib/demo";
 
 interface DateRange {
   from: Date;
@@ -24,6 +25,23 @@ export async function listTransactions(
   },
   pagination?: { page: number; limit: number },
 ): Promise<{ items: TransactionWithRelations[]; total: number }> {
+  if (isDemo) {
+    let filtered = demoTransactions.filter((t) => {
+      const d = new Date(t.date);
+      if (d < range.from || d > range.to) return false;
+      if (filters?.type && t.type !== filters.type) return false;
+      if (filters?.status && t.status !== filters.status) return false;
+      return true;
+    });
+
+    const page = pagination?.page ?? 1;
+    const limit = pagination?.limit ?? 20;
+    const total = filtered.length;
+    const items = filtered.slice((page - 1) * limit, page * limit);
+
+    return { items: items as unknown as TransactionWithRelations[], total };
+  }
+
   const page = pagination?.page ?? 1;
   const limit = Math.min(pagination?.limit ?? 50, 200);
 
@@ -60,6 +78,26 @@ export async function getTransactionSummary(
   range: DateRange,
   previousRange?: DateRange,
 ): Promise<TransactionSummary> {
+  if (isDemo) {
+    const revenue = demoTransactions
+      .filter((t) => t.type === "REVENUE" && t.status === "PAID" && new Date(t.date) >= range.from && new Date(t.date) <= range.to)
+      .reduce((sum, t) => sum + t.amount, 0);
+    const expenses = demoTransactions
+      .filter((t) => t.type === "EXPENSE" && t.status === "PAID" && new Date(t.date) >= range.from && new Date(t.date) <= range.to)
+      .reduce((sum, t) => sum + t.amount, 0);
+    const pending = demoTransactions
+      .filter((t) => t.status === "PENDING" && new Date(t.date) >= range.from && new Date(t.date) <= range.to)
+      .reduce((sum, t) => sum + t.amount, 0);
+    return {
+      totalRevenue: revenue,
+      totalExpenses: expenses,
+      balance: revenue - expenses,
+      pendingAmount: pending,
+      revenueTrend: 12.5,
+      expenseTrend: -3.2,
+    };
+  }
+
   const where = {
     ...tenantWhere(organizationId),
     date: { gte: range.from, lte: range.to },
@@ -216,6 +254,15 @@ export async function listCategories(
   organizationId: string,
   type?: "REVENUE" | "EXPENSE",
 ) {
+  if (isDemo) {
+    return [
+      { id: "cat-1", organizationId, name: "Consultas", type: "REVENUE" as const, color: "#7c3aed" },
+      { id: "cat-2", organizationId, name: "Procedimentos", type: "REVENUE" as const, color: "#0ea5e9" },
+      { id: "cat-3", organizationId, name: "Aluguel", type: "EXPENSE" as const, color: "#ef4444" },
+      { id: "cat-4", organizationId, name: "Material", type: "EXPENSE" as const, color: "#f59e0b" },
+      { id: "cat-5", organizationId, name: "Software", type: "EXPENSE" as const, color: "#10b981" },
+    ].filter((c) => !type || c.type === type);
+  }
   return prisma.financeCategory.findMany({
     where: {
       organizationId,
@@ -332,6 +379,14 @@ export async function payCommissions(
 }
 
 export async function listProfessionals(organizationId: string) {
+  if (isDemo) {
+    return [
+      { id: "pr-1", name: "Dra. Maria Silva" },
+      { id: "pr-2", name: "Dr. João Santos" },
+      { id: "pr-3", name: "Dra. Ana Costa" },
+      { id: "pr-4", name: "Dr. Pedro Lima" },
+    ];
+  }
   return prisma.professional.findMany({
     where: { organizationId, active: true },
     select: { id: true, name: true },
@@ -340,6 +395,15 @@ export async function listProfessionals(organizationId: string) {
 }
 
 export async function listPatients(organizationId: string, search?: string) {
+  if (isDemo) {
+    let filtered = demoPatients.filter((p) => p.status === "active");
+    if (search) {
+      const q = search.toLowerCase();
+      filtered = filtered.filter((p) => p.name.toLowerCase().includes(q));
+    }
+    return filtered.map((p) => ({ id: p.id, name: p.name })).slice(0, 50);
+  }
+
   const where: Prisma.PatientWhereInput = {
     organizationId,
     status: "active",

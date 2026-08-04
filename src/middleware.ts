@@ -5,11 +5,15 @@ const PUBLIC_PATH_PREFIXES = ["/login", "/register", "/forgot-password"];
 
 const PUBLIC_EXACT = new Set(["/"]);
 
+const isDemo = !process.env.DATABASE_URL || process.env.DEMO_MODE === "true";
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const sessionToken = getSessionCookie(request, {
-    cookiePrefix: "clinica",
-  });
+  const sessionToken = isDemo
+    ? "demo-session"
+    : getSessionCookie(request, {
+        cookiePrefix: "clinica",
+      });
 
   const isPublicExact = PUBLIC_EXACT.has(pathname);
   const isPublicPrefix = PUBLIC_PATH_PREFIXES.some((p) => pathname.startsWith(p));

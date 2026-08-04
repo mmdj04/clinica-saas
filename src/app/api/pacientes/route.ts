@@ -7,20 +7,27 @@ import {
 } from "@/features/pacientes/services/paciente-service";
 import { recordAudit } from "@/lib/audit";
 import type { PatientStatus } from "@/features/pacientes/types";
+import { isDemo } from "@/lib/demo";
 
 export async function GET(request: NextRequest) {
   try {
     const session = await requireAuth();
     const userId = (session.user as { id: string }).id;
 
-    const membership = await prisma.organizationMember.findFirst({
-      where: { userId },
-    });
-    if (!membership) {
-      return NextResponse.json(
-        { error: "Organização não encontrada" },
-        { status: 403 },
-      );
+    let orgId: string;
+    if (isDemo) {
+      orgId = "demo-org-001";
+    } else {
+      const membership = await prisma.organizationMember.findFirst({
+        where: { userId },
+      });
+      if (!membership) {
+        return NextResponse.json(
+          { error: "Organização não encontrada" },
+          { status: 403 },
+        );
+      }
+      orgId = membership.organizationId;
     }
 
     const { searchParams } = new URL(request.url);
@@ -30,7 +37,7 @@ export async function GET(request: NextRequest) {
     const page = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
     const limit = searchParams.get("limit") ? Number(searchParams.get("limit")) : 20;
 
-    const result = await listPatients(membership.organizationId, {
+    const result = await listPatients(orgId, {
       q,
       status,
       tag,
@@ -50,19 +57,28 @@ export async function POST(request: NextRequest) {
     const session = await requireAuth();
     const userId = (session.user as { id: string }).id;
 
-    const membership = await prisma.organizationMember.findFirst({
-      where: { userId },
-    });
-    if (!membership) {
+    let orgId: string;
+    if (isDemo) {
       return NextResponse.json(
-        { error: "Organização não encontrada" },
+        { error: "Modo demo não permite escrita" },
         { status: 403 },
       );
+    } else {
+      const membership = await prisma.organizationMember.findFirst({
+        where: { userId },
+      });
+      if (!membership) {
+        return NextResponse.json(
+          { error: "Organização não encontrada" },
+          { status: 403 },
+        );
+      }
+      orgId = membership.organizationId;
     }
 
     const body = await request.json();
 
-    const patient = await createPatient(membership.organizationId, userId, {
+    const patient = await createPatient(orgId, userId, {
       name: body.name,
       email: body.email,
       phone: body.phone,

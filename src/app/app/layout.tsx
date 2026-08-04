@@ -5,6 +5,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { can, type Permission } from "@/lib/permissions";
 import type { ShellContext } from "@/types/shell";
 import type { Role } from "@prisma/client";
+import { isDemo } from "@/lib/demo";
 
 export const dynamic = "force-dynamic";
 
@@ -22,15 +23,17 @@ export default async function AppLayout({
   const orgId = current.organization.id;
   const memberships = current.memberships;
 
-  const [specialtyCount, roomCount] = await Promise.all([
-    prisma.specialty.count({ where: { organizationId: orgId } }),
-    prisma.room.count({ where: { organizationId: orgId } }),
-  ]);
-
-  const untouched =
-    specialtyCount === 0 && roomCount === 0
-      ? await prisma.appointment.count({ where: { organizationId: orgId } })
-      : 1;
+  let untouched = 1;
+  if (!isDemo) {
+    const [specialtyCount, roomCount] = await Promise.all([
+      prisma.specialty.count({ where: { organizationId: orgId } }),
+      prisma.room.count({ where: { organizationId: orgId } }),
+    ]);
+    untouched =
+      specialtyCount === 0 && roomCount === 0
+        ? await prisma.appointment.count({ where: { organizationId: orgId } })
+        : 1;
+  }
 
   const shellContext: ShellContext = {
     user: {
@@ -50,7 +53,7 @@ export default async function AppLayout({
     role: current.role as Role,
     memberships: memberships.map((m: (typeof memberships)[number]) => ({
       organizationId: m.organization.id,
-      role: m.role,
+      role: m.role as Role,
       organization: {
         id: m.organization.id,
         name: m.organization.name,

@@ -9,6 +9,7 @@ import type {
   AttachmentCategory,
   EvolutionType,
 } from "../types";
+import { isDemo, demoPatients } from "@/lib/demo";
 
 function requireOrgId(): string {
   const tenant = getTenant();
@@ -25,6 +26,28 @@ function requireUserId(): string {
 // ─── Patient Search ───────────────────────────────────────────
 
 export async function searchPatients(query: string) {
+  if (isDemo) {
+    let filtered = demoPatients.filter((p) => p.status === "active");
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.cpf?.includes(q) ||
+          p.phone?.includes(q) ||
+          p.email?.toLowerCase().includes(q),
+      );
+    }
+    return filtered.map((p) => ({
+      id: p.id,
+      name: p.name,
+      cpf: p.cpf,
+      phone: p.phone,
+      photoUrl: null,
+      status: p.status,
+    }));
+  }
+
   const organizationId = requireOrgId();
   const where: Record<string, unknown> = { organizationId, status: "active" };
 
@@ -54,6 +77,22 @@ export async function searchPatients(query: string) {
 }
 
 export async function getPatientSummary(patientId: string) {
+  if (isDemo) {
+    const p = demoPatients.find((dp) => dp.id === patientId);
+    if (!p) return null;
+    return {
+      id: p.id,
+      name: p.name,
+      photoUrl: null,
+      cpf: p.cpf,
+      phone: p.phone,
+      email: p.email,
+      birthDate: p.birthDate ? new Date(p.birthDate) : null,
+      lastVisit: new Date(),
+      totalAppointments: 5,
+    };
+  }
+
   const organizationId = requireOrgId();
 
   const patient = await prisma.patient.findFirst({
@@ -94,6 +133,26 @@ export async function getPatientSummary(patientId: string) {
 // ─── Anamnesis ────────────────────────────────────────────────
 
 export async function getAnamnesis(patientId: string) {
+  if (isDemo) {
+    return {
+      id: "anam-1",
+      organizationId: "demo-org-001",
+      patientId,
+      professionalId: "pr-1",
+      content: {
+        chiefComplaint: "Dor de cabeça há 3 dias",
+        historyOfPresentIllness: "Paciente relata cefaleia tensional",
+        pastHistory: "Hipertensão arterial",
+        allergies: "Nenhuma",
+        medications: "Losartana 50mg",
+      },
+      version: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      professional: { id: "pr-1", name: "Dra. Maria Silva" },
+    };
+  }
+
   const organizationId = requireOrgId();
   return prisma.anamnesis.findFirst({
     where: { patientId, organizationId },
@@ -136,6 +195,35 @@ export async function upsertAnamnesis(
 // ─── Evolution ────────────────────────────────────────────────
 
 export async function listEvolutions(patientId: string) {
+  if (isDemo) {
+    return [
+      {
+        id: "evo-1",
+        organizationId: "demo-org-001",
+        patientId,
+        appointmentId: null,
+        professionalId: "pr-1",
+        type: "INITIAL",
+        content: "Primeira consulta: paciente relata cefaleia tensional há 3 dias. Exame físico normal. PA 130x85mmHg.",
+        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        professional: { id: "pr-1", name: "Dra. Maria Silva" },
+      },
+      {
+        id: "evo-2",
+        organizationId: "demo-org-001",
+        patientId,
+        appointmentId: null,
+        professionalId: "pr-1",
+        type: "EVOLUTION",
+        content: "Retorno: melhora dos sintomas. Manter medicação atual. Retornar em 15 dias.",
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        professional: { id: "pr-1", name: "Dra. Maria Silva" },
+      },
+    ];
+  }
+
   const organizationId = requireOrgId();
   return prisma.evolution.findMany({
     where: { patientId, organizationId },
@@ -169,6 +257,26 @@ export async function createEvolution(data: {
 // ─── Prescription ─────────────────────────────────────────────
 
 export async function listPrescriptions(patientId: string) {
+  if (isDemo) {
+    return [
+      {
+        id: "rx-1",
+        organizationId: "demo-org-001",
+        patientId,
+        professionalId: "pr-1",
+        items: [
+          { medicine: "Losartana", dosage: "50mg", frequency: "1x ao dia", duration: "30 dias" },
+          { medicine: "Dipirona", dosage: "500mg", frequency: "6/6h se dor", duration: "5 dias" },
+        ],
+        guidelines: "Evitar esforço físico. Retornar em 15 dias.",
+        validDays: 10,
+        issuedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        professional: { id: "pr-1", name: "Dra. Maria Silva" },
+      },
+    ];
+  }
+
   const organizationId = requireOrgId();
   return prisma.prescription.findMany({
     where: { patientId, organizationId },
@@ -202,6 +310,26 @@ export async function createPrescription(data: {
 // ─── Exam ─────────────────────────────────────────────────────
 
 export async function listExams(patientId: string) {
+  if (isDemo) {
+    return [
+      {
+        id: "exam-1",
+        organizationId: "demo-org-001",
+        patientId,
+        professionalId: "pr-1",
+        name: "Hemograma completo",
+        category: "laboratorial",
+        fileUrl: null,
+        orderedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+        resultDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+        summary: "Resultados dentro dos limites normais",
+        status: "delivered",
+        createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+        professional: { id: "pr-1", name: "Dra. Maria Silva" },
+      },
+    ];
+  }
+
   const organizationId = requireOrgId();
   return prisma.exam.findMany({
     where: { patientId, organizationId },

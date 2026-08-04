@@ -13,6 +13,7 @@ import {
   endOfDay,
   differenceInDays,
 } from "date-fns";
+import { isDemo } from "@/lib/demo";
 import type {
   PatientReportData,
   AppointmentReportData,
@@ -39,6 +40,44 @@ export async function fetchPatientReport(
   from?: Date,
   to?: Date,
 ): Promise<PatientReportData> {
+  if (isDemo) {
+    return {
+      totalPatients: 156,
+      totalPatientsTrend: 12.5,
+      newPatientsMonthly: [
+        { month: "Fev/26", count: 12 },
+        { month: "Mar/26", count: 15 },
+        { month: "Abr/26", count: 18 },
+        { month: "Mai/26", count: 22 },
+        { month: "Jun/26", count: 19 },
+        { month: "Jul/26", count: 25 },
+      ],
+      genderDistribution: [
+        { name: "Feminino", value: 89 },
+        { name: "Masculino", value: 62 },
+        { name: "Outro", value: 5 },
+      ],
+      topSources: [
+        { name: "Indicação", count: 45 },
+        { name: "Google", count: 38 },
+        { name: "Instagram", count: 32 },
+        { name: "Outro", count: 41 },
+      ],
+      insuranceDistribution: [
+        { name: "Particular", count: 78 },
+        { name: "Amil", count: 25 },
+        { name: "SulAmérica", count: 18 },
+        { name: "Unimed", count: 22 },
+        { name: "Outro", count: 13 },
+      ],
+      statusBreakdown: [
+        { name: "Ativo", value: 142 },
+        { name: "Inativo", value: 10 },
+        { name: "Bloqueado", value: 4 },
+      ],
+    };
+  }
+
   const range = getDefaultRange(from, to);
   const months = getMonthsInRange(range.from, range.to);
 
@@ -138,6 +177,44 @@ export async function fetchAppointmentReport(
   from?: Date,
   to?: Date,
 ): Promise<AppointmentReportData> {
+  if (isDemo) {
+    return {
+      totalAppointments: 342,
+      totalAppointmentsTrend: 8.3,
+      averageDaily: 16,
+      byStatus: [
+        { name: "Concluída", count: 280 },
+        { name: "Cancelada", count: 35 },
+        { name: "Não compareceu", count: 27 },
+      ],
+      byProfessional: [
+        { name: "Dra. Maria Silva", count: 120 },
+        { name: "Dr. João Santos", count: 95 },
+        { name: "Dra. Ana Costa", count: 78 },
+        { name: "Dr. Pedro Lima", count: 49 },
+      ],
+      monthlyTrend: [
+        { month: "Fev/26", count: 45 },
+        { month: "Mar/26", count: 52 },
+        { month: "Abr/26", count: 48 },
+        { month: "Mai/26", count: 58 },
+        { month: "Jun/26", count: 62 },
+        { month: "Jul/26", count: 77 },
+      ],
+      byHour: Array.from({ length: 12 }, (_, i) => ({
+        hour: `${i + 8}:00`,
+        count: Math.floor(Math.random() * 30) + 10,
+      })),
+      byDayOfWeek: [
+        { name: "Segunda", count: 72 },
+        { name: "Terça", count: 68 },
+        { name: "Quarta", count: 65 },
+        { name: "Quinta", count: 70 },
+        { name: "Sexta", count: 67 },
+      ],
+    };
+  }
+
   const range = getDefaultRange(from, to);
   const months = getMonthsInRange(range.from, range.to);
 
@@ -242,6 +319,35 @@ export async function fetchFinanceReport(
   from?: Date,
   to?: Date,
 ): Promise<FinanceReportData> {
+  if (isDemo) {
+    return {
+      totalRevenue: 18500,
+      totalExpenses: 6419,
+      balance: 12081,
+      averageTicket: 285,
+      balanceTrend: 15.2,
+      monthlyData: [
+        { month: "Fev/26", receita: 14200, despesa: 5800 },
+        { month: "Mar/26", receita: 16800, despesa: 6100 },
+        { month: "Abr/26", receita: 15400, despesa: 5900 },
+        { month: "Mai/26", receita: 17200, despesa: 6200 },
+        { month: "Jun/26", receita: 19100, despesa: 6500 },
+        { month: "Jul/26", receita: 18500, despesa: 6419 },
+      ],
+      byPaymentMethod: [
+        { name: "PIX", value: 8500 },
+        { name: "Cartão", value: 6200 },
+        { name: "Dinheiro", value: 2100 },
+        { name: "Transferência", value: 1700 },
+      ],
+      byCategory: [
+        { name: "Consultas", value: 12000 },
+        { name: "Procedimentos", value: 6500 },
+      ],
+      topProfessional: { name: "Dra. Maria Silva", revenue: 8200 },
+    };
+  }
+
   const range = getDefaultRange(from, to);
   const months = getMonthsInRange(range.from, range.to);
 
@@ -414,6 +520,36 @@ export async function fetchCancellationReport(
   from?: Date,
   to?: Date,
 ): Promise<CancellationReportData> {
+  if (isDemo) {
+    return {
+      totalCancellations: 35,
+      totalNoShows: 27,
+      cancelRate: 10.2,
+      noShowRate: 7.9,
+      cancelRateTrend: -2.1,
+      byReason: [
+        { name: "Reagendamento", count: 15 },
+        { name: "Desistência", count: 10 },
+        { name: "Problema pessoal", count: 6 },
+        { name: "Motivo não informado", count: 4 },
+      ],
+      byProfessional: [
+        { name: "Dr. João Santos", cancelled: 12, noShow: 8 },
+        { name: "Dra. Maria Silva", cancelled: 10, noShow: 7 },
+        { name: "Dra. Ana Costa", cancelled: 8, noShow: 6 },
+        { name: "Dr. Pedro Lima", cancelled: 5, noShow: 6 },
+      ],
+      monthlyTrend: [
+        { month: "Fev/26", cancelled: 4, noShow: 3 },
+        { month: "Mar/26", cancelled: 5, noShow: 4 },
+        { month: "Abr/26", cancelled: 6, noShow: 5 },
+        { month: "Mai/26", cancelled: 7, noShow: 5 },
+        { month: "Jun/26", cancelled: 6, noShow: 5 },
+        { month: "Jul/26", cancelled: 7, noShow: 5 },
+      ],
+    };
+  }
+
   const range = getDefaultRange(from, to);
   const months = getMonthsInRange(range.from, range.to);
 

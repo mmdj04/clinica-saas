@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentOrganization } from "@/lib/multi-tenancy";
 import { prisma } from "@/lib/prisma";
 import { ProntuarioPage } from "@/features/prontuario/components/prontuario-page";
+import { isDemo, demoPatients } from "@/lib/demo";
 
 export const dynamic = "force-dynamic";
 
@@ -14,10 +15,17 @@ export default async function PatientProntuarioPage({ params }: PageProps) {
   const current = await getCurrentOrganization();
   if (!current) redirect("/onboard");
 
-  const patient = await prisma.patient.findFirst({
-    where: { id, organizationId: current.organization.id },
-    select: { id: true, name: true },
-  });
+  let patient: { id: string; name: string } | null;
+
+  if (isDemo) {
+    const p = demoPatients.find((dp) => dp.id === id);
+    patient = p ? { id: p.id, name: p.name } : null;
+  } else {
+    patient = await prisma.patient.findFirst({
+      where: { id, organizationId: current.organization.id },
+      select: { id: true, name: true },
+    });
+  }
 
   if (!patient) redirect("/app/prontuario");
 

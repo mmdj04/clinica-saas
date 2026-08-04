@@ -74,8 +74,8 @@ export function EvolutionList({ patientId }: EvolutionListProps) {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <Badge variant={EVOLUTION_TYPE_VARIANTS[evo.type]}>
-                          {EVOLUTION_TYPE_LABELS[evo.type]}
+                        <Badge variant={EVOLUTION_TYPE_VARIANTS[evo.type as EvolutionType]}>
+                          {EVOLUTION_TYPE_LABELS[evo.type as EvolutionType]}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
                           {formatDate(evo.createdAt)} às{" "}

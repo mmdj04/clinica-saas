@@ -2,6 +2,12 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { cache } from "react";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import {
+  isDemo,
+  demoUser,
+  demoOrganization,
+  demoMemberships,
+} from "@/lib/demo";
 
 /**
  * MULTI-TENANCY
@@ -49,6 +55,14 @@ export function injectTenantScope<T extends Record<string, unknown>>(
  * Usado em Server Components (cacheado por requisição via React `cache`).
  */
 export const getCurrentOrganization = cache(async () => {
+  if (isDemo) {
+    return {
+      organization: demoOrganization,
+      role: "OWNER",
+      memberships: demoMemberships,
+    };
+  }
+
   const { auth } = await import("@/lib/auth");
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -74,6 +88,8 @@ export const getCurrentOrganization = cache(async () => {
 });
 
 export const getCurrentUser = cache(async () => {
+  if (isDemo) return demoUser;
+
   const { auth } = await import("@/lib/auth");
   const session = await auth.api.getSession({
     headers: await headers(),

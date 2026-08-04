@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import type { PatientStatus } from "@/features/pacientes/types";
 import type { Prisma } from "@prisma/client";
+import { isDemo, demoPatients } from "@/lib/demo";
 
 const patientInclude = {
   tags: {
@@ -32,6 +33,51 @@ export async function listPatients(
   } = {},
 ) {
   const { q, status, tag, page = 1, limit = 20 } = params;
+
+  if (isDemo) {
+    let filtered = demoPatients.map((p) => ({
+      ...p,
+      organizationId,
+      gender: "NOT_INFORMED" as const,
+      photoUrl: null,
+      cep: null,
+      address: null,
+      city: null,
+      state: null,
+      insuranceProvider: null,
+      insuranceNumber: null,
+      emergencyContact: null,
+      emergencyPhone: null,
+      responsibleName: null,
+      responsiblePhone: null,
+      notes: null,
+      source: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdById: null,
+      tags: [],
+    }));
+
+    if (q) {
+      const query = q.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(query) ||
+          p.phone?.includes(query) ||
+          p.email?.toLowerCase().includes(query) ||
+          p.cpf?.includes(query),
+      );
+    }
+    if (status) {
+      filtered = filtered.filter((p) => p.status === status);
+    }
+
+    const total = filtered.length;
+    const totalPages = Math.ceil(total / limit);
+    const items = filtered.slice((page - 1) * limit, page * limit);
+
+    return { items, total, page, limit, totalPages };
+  }
   const skip = (page - 1) * limit;
 
   const where: Prisma.PatientWhereInput = {

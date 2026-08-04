@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { isDemo } from "@/lib/demo";
 
 export const dynamic = "force-dynamic";
 
@@ -63,7 +64,18 @@ export default async function HomePage() {
             clínica.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            {user ? (
+            {isDemo ? (
+              <>
+                <Link href="/app/dashboard">
+                  <Button size="lg">
+                    Entrar no Demo <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Badge variant="outline" className="border-green-500 text-green-600">
+                  Demo Mode — Sem banco de dados
+                </Badge>
+              </>
+            ) : user ? (
               <Link href="/app/dashboard">
                 <Button size="lg">
                   Ir para o painel <ArrowRight className="h-4 w-4" />

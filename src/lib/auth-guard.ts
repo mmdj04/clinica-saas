@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { getTenant } from "@/lib/multi-tenancy";
 import { can as canWithRole, type Permission } from "@/lib/permissions";
 import type { Role } from "@prisma/client";
+import { isDemo, demoUser } from "@/lib/demo";
 
 /**
  * Autorização de servidor.
@@ -11,6 +12,9 @@ import type { Role } from "@prisma/client";
  * `requirePermission(permission)` — Server Action / Route Handler: exige papel.
  */
 export async function getSession() {
+  if (isDemo) {
+    return { user: demoUser };
+  }
   const { auth } = await import("@/lib/auth");
   const session = await auth.api.getSession({
     headers: await headers(),

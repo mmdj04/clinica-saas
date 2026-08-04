@@ -7,6 +7,7 @@ import {
   subMonths,
   format,
 } from "date-fns";
+import { isDemo, demoDashboardData } from "@/lib/demo";
 
 export interface DashboardData {
   kpis: {
@@ -40,6 +41,40 @@ export interface DashboardData {
 export async function fetchDashboardData(
   organizationId: string,
 ): Promise<DashboardData> {
+  if (isDemo) {
+    return {
+      kpis: {
+        todayRevenue: 750,
+        monthlyRevenue: demoDashboardData.kpis.monthRevenue,
+        activePatients: demoDashboardData.kpis.totalPatients,
+        todayAppointments: demoDashboardData.kpis.appointmentsToday,
+        noShowRate: 5.2,
+      },
+      todayAppointments: demoDashboardData.todayAppointments.map((a) => ({
+        id: a.id,
+        startAt: a.startAt,
+        endAt: a.endAt,
+        status: a.status,
+        patientName: a.patientName,
+        professionalName: a.professionalName,
+        professionalColor: "#7c3aed",
+        price: a.price,
+      })),
+      revenueChart: demoDashboardData.revenueChart.map((m) => ({
+        month: m.month,
+        receita: m.revenue,
+        despesa: m.expenses,
+      })),
+      recentActivity: demoDashboardData.recentActivity.map((a, i) => ({
+        id: `act-${i}`,
+        action: a.action,
+        entityType: "system",
+        entityId: null,
+        createdAt: new Date(),
+        actorName: a.detail,
+      })),
+    };
+  }
   const now = new Date();
   const todayStart = startOfDay(now);
   const todayEnd = endOfDay(now);
