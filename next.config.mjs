@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  output: "standalone",
+  // output: "standalone", // Removido — Vercel gerencia output internamente
   turbopack: {},
   serverExternalPackages: ["better-auth", "@better-auth/core", "@better-auth/prisma-adapter", "pg", "@prisma/adapter-pg"],
   experimental: {
