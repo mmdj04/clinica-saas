@@ -107,8 +107,10 @@ export function MonthlyView({
                           apt.professional.color || "#7c3aed",
                       }}
                     />
+                    <span className="shrink-0 text-muted-foreground">
+                      {format(new Date(apt.startAt), "HH:mm")}
+                    </span>
                     <span className="truncate font-medium">
-                      {format(new Date(apt.startAt), "HH:mm")}{" "}
                       {apt.patient.name}
                     </span>
                   </div>

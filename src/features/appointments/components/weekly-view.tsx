@@ -46,7 +46,7 @@ export function WeeklyView({
     <div className="flex h-[calc(100vh-220px)] flex-col">
       {/* Day headers */}
       <div className="flex border-b">
-        <div className="w-10 sm:w-16 shrink-0" />
+        <div className="w-14 sm:w-16 shrink-0" />
         {days.map((day) => (
           <div
             key={day.toISOString()}
@@ -74,7 +74,7 @@ export function WeeklyView({
       <ScrollArea className="flex-1">
         <div className="relative flex">
           {/* Time column */}
-          <div className="w-10 sm:w-16 shrink-0">
+          <div className="w-14 sm:w-16 shrink-0">
             {HOURS_RANGE.map((hour) => (
               <div
                 key={hour}
@@ -98,7 +98,7 @@ export function WeeklyView({
               <div
                 key={day.toISOString()}
                 className={cn(
-                  "relative flex-1 border-l",
+                  "relative min-w-0 flex-1 border-l",
                   isToday(day) && "bg-primary/5",
                 )}
               >

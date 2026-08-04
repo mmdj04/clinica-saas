@@ -32,14 +32,14 @@ export function AppointmentCard({
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.15 }}
         className={cn(
-          "cursor-pointer rounded-md border-l-[3px] bg-card px-2 py-1.5 text-xs transition-colors hover:bg-accent/50",
+          "cursor-pointer rounded-md border-l-[3px] bg-card px-1.5 py-1 transition-colors hover:bg-accent/50",
           className,
         )}
         style={{ borderLeftColor: professionalColor }}
         onClick={() => onClick?.(appointment)}
       >
-        <p className="truncate font-medium">{appointment.patient.name}</p>
-        <p className="text-muted-foreground">
+        <p className="truncate text-[11px] font-medium leading-tight">{appointment.patient.name}</p>
+        <p className="truncate text-[10px] text-muted-foreground leading-tight">
           {formatTime(appointment.startAt)}–{formatTime(appointment.endAt)}
         </p>
       </motion.div>
@@ -67,7 +67,7 @@ export function AppointmentCard({
           </p>
           <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Clock className="h-3 w-3 shrink-0" />
-            <span>
+            <span className="whitespace-nowrap">
               {formatTime(appointment.startAt)}–{formatTime(appointment.endAt)}
             </span>
           </div>
