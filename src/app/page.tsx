@@ -17,7 +17,12 @@ import { Badge } from "@/components/ui/badge";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const user = await getCurrentUser();
+  let user = null;
+  try {
+    user = await getCurrentUser();
+  } catch {
+    // Landing page works without database/auth configured
+  }
 
   return (
     <div className="relative min-h-screen">
