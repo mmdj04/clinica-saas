@@ -2,6 +2,7 @@ import "server-only";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { isDemo } from "@/lib/demo";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -20,8 +21,12 @@ function createPrismaClient() {
   });
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+export const prisma = isDemo
+  ? (null as unknown as PrismaClient)
+  : (globalForPrisma.prisma ?? createPrismaClient());
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (!isDemo && process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}
 
 export { prismaAdapter };
