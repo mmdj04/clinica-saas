@@ -32,14 +32,14 @@ const barConfig = {
 export function RevenueExpenseChart({ data }: RevenueExpenseChartProps) {
   if (!data.length) {
     return (
-      <div className="flex h-[300px] items-center justify-center text-sm text-muted-foreground">
+      <div className="flex h-[200px] sm:h-[300px] items-center justify-center text-sm text-muted-foreground">
         Sem dados para exibir.
       </div>
     );
   }
 
   return (
-    <ChartContainer config={barConfig} className="h-[300px] w-full">
+    <ChartContainer config={barConfig} className="h-[200px] sm:h-[300px] w-full">
       <BarChart data={data} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis
@@ -103,7 +103,7 @@ const PIE_COLORS = [
 export function CategoryPieChart({ data }: CategoryPieChartProps) {
   if (!data.length) {
     return (
-      <div className="flex h-[300px] items-center justify-center text-sm text-muted-foreground">
+      <div className="flex h-[200px] sm:h-[300px] items-center justify-center text-sm text-muted-foreground">
         Sem dados para exibir.
       </div>
     );

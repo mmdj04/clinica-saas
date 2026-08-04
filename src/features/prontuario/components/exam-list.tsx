@@ -63,6 +63,7 @@ export function ExamList({ patientId }: ExamListProps) {
 
   return (
     <ScrollArea className="h-[calc(100vh-280px)]">
+      <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
@@ -108,7 +109,8 @@ export function ExamList({ patientId }: ExamListProps) {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+        </Table>
+      </div>
     </ScrollArea>
   );
 }

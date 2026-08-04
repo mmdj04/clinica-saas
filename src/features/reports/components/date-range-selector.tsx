@@ -99,7 +99,7 @@ export function DateRangeSelector({
               type="date"
               value={format(value.from, "yyyy-MM-dd")}
               onChange={handleFromChange}
-              className="w-[150px]"
+              className="w-full sm:w-[150px]"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -108,7 +108,7 @@ export function DateRangeSelector({
               type="date"
               value={format(value.to, "yyyy-MM-dd")}
               onChange={handleToChange}
-              className="w-[150px]"
+              className="w-full sm:w-[150px]"
             />
           </div>
         </div>

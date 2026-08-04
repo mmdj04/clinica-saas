@@ -39,7 +39,7 @@ export function DailyView({
     <ScrollArea className="h-[calc(100vh-220px)]">
       <div className="relative flex">
         {/* Time column */}
-        <div className="w-16 shrink-0 border-r">
+        <div className="w-10 sm:w-16 shrink-0 border-r">
           {HOURS_RANGE.map((hour) => (
             <div
               key={hour}

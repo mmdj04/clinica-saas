@@ -42,7 +42,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
         <CardDescription>Últimos 6 meses</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-[200px] sm:h-[300px] w-full">
           <BarChart data={data} barGap={4}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis

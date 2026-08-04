@@ -63,7 +63,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
             Nenhuma atividade registrada.
           </p>
         ) : (
-          <ScrollArea className="h-[300px]">
+          <ScrollArea className="h-[200px] sm:h-[300px]">
             <div className="space-y-4">
               {activities.map((log) => {
                 const Icon = actionIcons[log.action] ?? Activity;

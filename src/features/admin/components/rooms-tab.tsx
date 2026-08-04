@@ -172,7 +172,7 @@ export function RoomsTab({ organizationId: _organizationId, canEdit, initialData
               description="Cadastre salas para usar no agendamento."
             />
           ) : (
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>

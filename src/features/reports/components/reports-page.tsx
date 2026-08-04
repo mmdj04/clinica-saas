@@ -40,7 +40,7 @@ export function ReportsPage({ defaultRange }: ReportsPageProps) {
         title="Relatórios"
         description="Análises e indicadores da clínica"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -65,7 +65,7 @@ export function ReportsPage({ defaultRange }: ReportsPageProps) {
       <Separator />
 
       <Tabs defaultValue="patients" className="space-y-6">
-        <TabsList className="w-full justify-start">
+        <TabsList className="w-full flex-wrap justify-start h-auto">
           <TabsTrigger value="patients" className="gap-2">
             <Users className="h-4 w-4" />
             Pacientes

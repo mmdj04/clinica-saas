@@ -56,6 +56,7 @@ export function AppointmentsToday({ appointments }: AppointmentsTodayProps) {
             Nenhuma consulta para hoje.
           </p>
         ) : (
+          <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -90,6 +91,7 @@ export function AppointmentsToday({ appointments }: AppointmentsTodayProps) {
               ))}
             </TableBody>
           </Table>
+          </div>
         )}
       </CardContent>
     </Card>

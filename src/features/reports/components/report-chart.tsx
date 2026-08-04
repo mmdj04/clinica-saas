@@ -84,7 +84,7 @@ export function ReportBarChart({
             Sem dados para o período selecionado
           </p>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+          <ChartContainer config={chartConfig} className="h-[200px] sm:h-[300px] w-full">
             <BarChart
               data={data}
               layout={horizontal ? "vertical" : "horizontal"}
@@ -269,7 +269,7 @@ export function ReportLineChart({
             Sem dados para o período selecionado
           </p>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+          <ChartContainer config={chartConfig} className="h-[200px] sm:h-[300px] w-full">
             <LineChart data={data}>
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
               <XAxis
@@ -343,7 +343,7 @@ export function ComposedBarLineChart({
             Sem dados para o período selecionado
           </p>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+          <ChartContainer config={chartConfig} className="h-[200px] sm:h-[300px] w-full">
             <BarChart data={data} barGap={4}>
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
               <XAxis

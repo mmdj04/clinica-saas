@@ -183,7 +183,7 @@ export function MembersTab({ organizationId: _organizationId, canEdit, initialDa
               description="Convide membros para começar a gerenciar a clínica."
             />
           ) : (
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>

@@ -173,7 +173,7 @@ export function SpecialtiesTab({ organizationId: _organizationId, canEdit, initi
               description="Cadastre especialidades para associar aos profissionais."
             />
           ) : (
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -259,7 +259,7 @@ export function SpecialtiesTab({ organizationId: _organizationId, canEdit, initi
                   </FormItem>
                 )}
               />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="color"

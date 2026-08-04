@@ -102,7 +102,7 @@ export function AuditLogTab({ organizationId: _organizationId, initialData }: Au
                 setPage(1);
               }}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-full sm:w-[200px]">
                 <SelectValue placeholder="Ação" />
               </SelectTrigger>
               <SelectContent>
@@ -121,7 +121,7 @@ export function AuditLogTab({ organizationId: _organizationId, initialData }: Au
                 setPage(1);
               }}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-full sm:w-[200px]">
                 <SelectValue placeholder="Entidade" />
               </SelectTrigger>
               <SelectContent>
@@ -143,7 +143,7 @@ export function AuditLogTab({ organizationId: _organizationId, initialData }: Au
             />
           ) : (
             <>
-              <div className="rounded-md border">
+              <div className="rounded-md border overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>

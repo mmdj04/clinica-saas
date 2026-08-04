@@ -78,7 +78,7 @@ export function PacienteList({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border">
+      <div className="rounded-xl border overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
