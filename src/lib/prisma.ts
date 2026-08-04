@@ -1,18 +1,19 @@
 import "server-only";
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { prismaAdapter } from "better-auth/adapters/prisma";
+import type { PrismaClient } from "@prisma/client";
 import { isDemo } from "@/lib/demo";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-function createPrismaClient() {
+async function createPrismaClient(): Promise<PrismaClient> {
+  const { PrismaClient: PC } = await import("@prisma/client");
+  const { PrismaPg } = await import("@prisma/adapter-pg");
+
   const adapter = new PrismaPg({
     connectionString: process.env.DATABASE_URL!,
   });
-  return new PrismaClient({
+  return new PC({
     adapter,
     log:
       process.env.NODE_ENV === "development"
@@ -21,12 +22,24 @@ function createPrismaClient() {
   });
 }
 
-export const prisma = isDemo
-  ? (null as unknown as PrismaClient)
-  : (globalForPrisma.prisma ?? createPrismaClient());
-
-if (!isDemo && process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+async function ensurePrisma(): Promise<PrismaClient> {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = await createPrismaClient();
+  }
+  return globalForPrisma.prisma;
 }
 
-export { prismaAdapter };
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_, prop) {
+    return (...args: any[]) =>
+      ensurePrisma().then((client) => {
+        const val = (client as any)[prop];
+        return typeof val === "function" ? val.apply(client, args) : val;
+      });
+  },
+});
+
+export async function prismaAdapter(client: any, opts: { provider: "postgresql" }) {
+  const { prismaAdapter: adapter } = await import("better-auth/adapters/prisma");
+  return adapter(client, opts);
+}
