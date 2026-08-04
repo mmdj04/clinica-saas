@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentOrganization, getCurrentUser } from "@/lib/multi-tenancy";
 import { AppShell } from "@/components/layout/app-shell";
-import { can, type Permission } from "@/lib/permissions";
 import type { ShellContext } from "@/types/shell";
 import type { Role } from "@prisma/client";
 import { isDemo } from "@/lib/demo";
@@ -65,12 +64,10 @@ export default async function AppLayout({
     })),
   };
 
-  const has = (permission: Permission) => can(shellContext.role, permission);
-
   void untouched;
 
   return (
-    <AppShell context={shellContext} has={has}>
+    <AppShell context={shellContext} role={current.role as Role}>
       {children}
     </AppShell>
   );

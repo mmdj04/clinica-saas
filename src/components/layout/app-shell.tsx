@@ -13,16 +13,19 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import type { Permission } from "@/lib/permissions";
+import { can } from "@/lib/permissions";
 import type { ShellContext } from "@/types/shell";
+import type { Role } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export interface AppShellProps {
   context: ShellContext;
-  has: (p: Permission) => boolean;
+  role: Role;
   children: React.ReactNode;
 }
 
-export function AppShell({ context, has, children }: AppShellProps) {
+export function AppShell({ context, role, children }: AppShellProps) {
+  const has = (p: Permission) => can(role, p);
   const [collapsed, setCollapsed] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
