@@ -11,7 +11,7 @@ import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { UserMenu } from "@/components/layout/user-menu";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import type { Permission } from "@/lib/permissions";
 import { can } from "@/lib/permissions";
 import type { ShellContext } from "@/types/shell";
@@ -66,15 +66,15 @@ export function AppShell({ context, role, children }: AppShellProps) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <SheetTrigger
+          <Button
+            variant="ghost"
+            size="icon"
             className="lg:hidden"
             onClick={() => setMobileOpen(true)}
-            asChild
+            aria-label="Abrir menu"
           >
-            <Button variant="ghost" size="icon" aria-label="Abrir menu">
-              <PanelLeftOpen className="h-4 w-4" />
-            </Button>
-          </SheetTrigger>
+            <PanelLeftOpen className="h-4 w-4" />
+          </Button>
           <OrganizationSwitcher context={context} />
           <Separator orientation="vertical" className="mx-2 h-6" />
           <div className="hidden md:block">

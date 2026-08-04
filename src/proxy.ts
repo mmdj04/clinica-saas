@@ -12,7 +12,7 @@ function getSessionToken(request: NextRequest): string | null {
   return cookie?.value ?? null;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionToken = getSessionToken(request);
 
@@ -20,19 +20,16 @@ export function middleware(request: NextRequest) {
   const isPublicPrefix = PUBLIC_PATH_PREFIXES.some((p) => pathname.startsWith(p));
   const isApp = pathname.startsWith("/app");
 
-  // Rotas protegidas exigem sessão
   if (isApp && !sessionToken) {
     const url = new URL("/login", request.url);
     url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
   }
 
-  // Páginas de auth redirecionam usuários logados para o app
   if (isPublicPrefix && sessionToken) {
     return NextResponse.redirect(new URL("/app", request.url));
   }
 
-  // Headers de segurança (camada extra além de next.config)
   const response = NextResponse.next();
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
@@ -50,7 +47,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Exclui estáticos, API e assets
     "/((?!_next|api|trpc|.*\\..*).*)",
   ],
 };
