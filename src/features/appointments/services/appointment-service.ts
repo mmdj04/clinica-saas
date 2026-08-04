@@ -68,6 +68,17 @@ export async function listAppointments(params: ListAppointmentsParams) {
 }
 
 export async function getAppointmentById(id: string, organizationId: string) {
+  if (isDemo) {
+    const a = demoAppointments.find((a) => a.id === id);
+    if (!a) return null;
+    return {
+      ...a,
+      patient: { id: a.patientId, name: a.patientName, phone: "(11) 99999-0000" },
+      professional: { id: a.professionalId, name: a.professionalName, color: "#7c3aed" },
+      room: a.roomId ? { id: a.roomId, name: a.roomName } : null,
+      specialty: a.specialtyId ? { id: a.specialtyId, name: a.specialtyName, color: "#7c3aed" } : null,
+    };
+  }
   return prisma.appointment.findFirst({
     where: { id, organizationId },
     include: {
@@ -83,6 +94,29 @@ export async function createAppointment(
   organizationId: string,
   data: AppointmentCreateInput,
 ) {
+  if (isDemo) {
+    return {
+      id: `apt-${Date.now()}`,
+      organizationId,
+      patientId: data.patientId,
+      professionalId: data.professionalId,
+      roomId: data.roomId || null,
+      specialtyId: data.specialtyId || null,
+      startAt: new Date(data.startAt),
+      endAt: new Date(data.endAt),
+      status: data.status ?? "SCHEDULED",
+      type: data.type ?? "RETURN",
+      price: data.price ?? 0,
+      notes: data.notes || null,
+      cancelReason: null,
+      cancelledAt: null,
+      createdAt: new Date(),
+      patient: { id: data.patientId, name: "Paciente Demo", phone: "(11) 99999-0000" },
+      professional: { id: data.professionalId, name: "Profissional Demo", color: "#7c3aed" },
+      room: null,
+      specialty: null,
+    } as any;
+  }
   return prisma.appointment.create({
     data: {
       organizationId,
@@ -111,6 +145,9 @@ export async function updateAppointment(
   organizationId: string,
   data: AppointmentUpdateInput,
 ) {
+  if (isDemo) {
+    return { id, organizationId, ...data, updatedAt: new Date() } as any;
+  }
   return prisma.appointment.update({
     where: { id, organizationId },
     data: {
@@ -143,6 +180,9 @@ export async function cancelAppointment(
   organizationId: string,
   reason: string,
 ) {
+  if (isDemo) {
+    return { id, organizationId, status: "CANCELLED", cancelReason: reason, cancelledAt: new Date() } as any;
+  }
   return prisma.appointment.update({
     where: { id, organizationId },
     data: {
@@ -159,6 +199,9 @@ export async function rescheduleAppointment(
   startAt: Date,
   endAt: Date,
 ) {
+  if (isDemo) {
+    return { id, organizationId, startAt, endAt } as any;
+  }
   return prisma.appointment.update({
     where: { id, organizationId },
     data: { startAt, endAt },
@@ -172,12 +215,18 @@ export async function rescheduleAppointment(
 }
 
 export async function deleteAppointment(id: string, organizationId: string) {
+  if (isDemo) return { success: true };
   return prisma.appointment.delete({ where: { id, organizationId } });
 }
 
 // ── Waiting List ──────────────────────────────────────────────
 
 export async function listWaitingList(organizationId: string) {
+  if (isDemo) {
+    return [
+      { id: "wl-1", organizationId, patientId: "pat-1", professionalId: "pr-1", specialtyId: "sp-1", preferredDate: null, priority: 3, notes: null, status: "WAITING", createdAt: new Date(), patient: { id: "pat-1", name: "Ana Costa", phone: "(11) 99999-1111" }, professional: { id: "pr-1", name: "Dra. Maria Silva" }, specialty: { id: "sp-1", name: "Clínico Geral" } },
+    ];
+  }
   return prisma.waitingListEntry.findMany({
     where: { organizationId },
     include: {
@@ -200,6 +249,14 @@ export async function createWaitingListEntry(
     notes?: string;
   },
 ) {
+  if (isDemo) {
+    return {
+      id: `wl-${Date.now()}`, organizationId, ...data, preferredDate: data.preferredDate ? new Date(data.preferredDate) : null, priority: data.priority ?? 1, notes: data.notes || null, status: "WAITING", createdAt: new Date(),
+      patient: { id: data.patientId, name: "Paciente Demo", phone: "(11) 99999-0000" },
+      professional: null,
+      specialty: null,
+    } as any;
+  }
   return prisma.waitingListEntry.create({
     data: {
       organizationId,
@@ -223,6 +280,9 @@ export async function updateWaitingListEntry(
   organizationId: string,
   data: { status?: string; priority?: number },
 ) {
+  if (isDemo) {
+    return { id, organizationId, ...data } as any;
+  }
   return prisma.waitingListEntry.update({
     where: { id, organizationId },
     data,
@@ -233,6 +293,7 @@ export async function deleteWaitingListEntry(
   id: string,
   organizationId: string,
 ) {
+  if (isDemo) return { success: true };
   return prisma.waitingListEntry.delete({ where: { id, organizationId } });
 }
 

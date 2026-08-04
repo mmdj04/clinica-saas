@@ -10,6 +10,7 @@ import {
   updateOrganization,
 } from "@/features/organization/services/organization-service";
 import { organizationCreateSchema, organizationUpdateSchema } from "@/lib/validations";
+import { isDemo } from "@/lib/demo";
 
 export async function createOrganizationAction(_prev: unknown, formData: FormData) {
   const session = await requireAuth();
@@ -55,11 +56,13 @@ export async function updateOrganizationAction(prev: unknown, formData: FormData
 
   if (!orgId) return { message: "Organização inválida." };
 
-  const membership = await prisma.organizationMember.findFirst({
-    where: { organizationId: orgId, userId },
-  });
-  if (!membership || !["OWNER", "ADMIN"].includes(membership.role)) {
-    return { message: "Acesso negado." };
+  if (!isDemo) {
+    const membership = await prisma.organizationMember.findFirst({
+      where: { organizationId: orgId, userId },
+    });
+    if (!membership || !["OWNER", "ADMIN"].includes(membership.role)) {
+      return { message: "Acesso negado." };
+    }
   }
 
   const parsed = organizationUpdateSchema.safeParse({

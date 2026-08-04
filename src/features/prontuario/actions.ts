@@ -26,10 +26,18 @@ import {
   getAnamnesis,
 } from "./services/prontuario-service";
 import type { AnamnesisContent, EvolutionType, PrescriptionItem } from "./types";
+import { isDemo } from "@/lib/demo";
 
 async function withTenantContext<T>(fn: () => Promise<T>): Promise<T> {
   const session = await requireAuth();
   const userId = (session.user as { id: string }).id;
+
+  if (isDemo) {
+    return runWithTenant(
+      { organizationId: "demo-org-001", role: "OWNER", userId },
+      fn,
+    );
+  }
 
   const membership = await prisma.organizationMember.findFirst({
     where: { userId },

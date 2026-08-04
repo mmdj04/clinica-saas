@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getTenant } from "@/lib/multi-tenancy";
+import { isDemo } from "@/lib/demo";
 
 export interface AuditEvent {
   action: string;
@@ -15,6 +16,7 @@ export interface AuditEvent {
  * NUNCA armazena dados sensíveis (senhas, tokens) no metadadata.
  */
 export async function recordAudit(event: AuditEvent): Promise<void> {
+  if (isDemo) return;
   try {
     const tenant = getTenant();
     await prisma.auditLog.create({
@@ -38,6 +40,9 @@ export async function listAuditLogs(
   organizationId: string,
   opts: { limit?: number; page?: number; action?: string; entityType?: string },
 ) {
+  if (isDemo) {
+    return { items: [], total: 0, page: opts.page ?? 1, limit: opts.limit ?? 50 };
+  }
   const limit = Math.min(opts.limit ?? 50, 200);
   const page = Math.max(opts.page ?? 1, 1);
 

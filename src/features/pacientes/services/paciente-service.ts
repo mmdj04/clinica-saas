@@ -119,6 +119,34 @@ export async function listPatients(
 }
 
 export async function getPatientById(organizationId: string, patientId: string) {
+  if (isDemo) {
+    const p = demoPatients.find((dp) => dp.id === patientId);
+    if (!p) return null;
+    return {
+      ...p,
+      organizationId,
+      gender: "NOT_INFORMED" as const,
+      photoUrl: null,
+      cep: null,
+      address: null,
+      city: null,
+      state: null,
+      insuranceProvider: null,
+      insuranceNumber: null,
+      emergencyContact: null,
+      emergencyPhone: null,
+      responsibleName: null,
+      responsiblePhone: null,
+      notes: null,
+      source: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdById: null,
+      tags: [],
+      _count: { appointments: 5, anamnesis: 1, evolutions: 2, prescriptions: 1, exams: 1, attachments: 1 },
+      recentAppointments: [],
+    };
+  }
   const patient = await prisma.patient.findFirst({
     where: { id: patientId, organizationId },
     include: {
@@ -187,6 +215,9 @@ export async function createPatient(
     tags?: string[];
   },
 ) {
+  if (isDemo) {
+    return { id: `pat-${Date.now()}`, organizationId, createdById, name: data.name, email: data.email || null, phone: data.phone || null, cpf: data.cpf || null, status: data.status ?? "active", createdAt: new Date(), updatedAt: new Date(), tags: [] } as any;
+  }
   const tagIds = data.tags ?? [];
 
   return prisma.$transaction(async (tx) => {
@@ -257,6 +288,9 @@ export async function updatePatient(
     tags?: string[];
   },
 ) {
+  if (isDemo) {
+    return { id: patientId, organizationId, ...data, updatedAt: new Date() } as any;
+  }
   const { tags: tagIds, ...patientData } = data;
 
   return prisma.$transaction(async (tx) => {
@@ -319,12 +353,20 @@ export async function updatePatient(
 }
 
 export async function deletePatient(organizationId: string, patientId: string) {
+  if (isDemo) return { success: true };
   return prisma.patient.delete({
     where: { id: patientId, organizationId },
   });
 }
 
 export async function listPatientTags(organizationId: string) {
+  if (isDemo) {
+    return [
+      { id: "tag-1", organizationId, name: "VIP", color: "#7c3aed" },
+      { id: "tag-2", organizationId, name: "Plano de Saúde", color: "#0ea5e9" },
+      { id: "tag-3", organizationId, name: "Particular", color: "#10b981" },
+    ];
+  }
   return prisma.patientTag.findMany({
     where: { organizationId },
     orderBy: { name: "asc" },
@@ -335,6 +377,9 @@ export async function createPatientTag(
   organizationId: string,
   data: { name: string; color: string },
 ) {
+  if (isDemo) {
+    return { id: `tag-${Date.now()}`, organizationId, ...data };
+  }
   return prisma.patientTag.create({
     data: {
       organizationId,
@@ -345,6 +390,7 @@ export async function createPatientTag(
 }
 
 export async function deletePatientTag(organizationId: string, tagId: string) {
+  if (isDemo) return { success: true };
   return prisma.patientTag.delete({
     where: { id: tagId, organizationId },
   });

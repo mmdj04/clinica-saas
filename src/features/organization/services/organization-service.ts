@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
 import type { Prisma } from "@prisma/client";
+import { isDemo } from "@/lib/demo";
 
 export interface CreateOrganizationParams {
   name: string;
@@ -13,6 +14,9 @@ export interface CreateOrganizationParams {
 }
 
 export async function createOrganization(params: CreateOrganizationParams) {
+  if (isDemo) {
+    return { id: "demo-org-001", name: params.name, slug: slugify(params.slug || params.name), cnpj: params.cnpj || null, logoUrl: null, primaryColor: params.primaryColor || "#7c3aed", plan: "PRO", status: "ACTIVE", settings: {}, createdAt: new Date(), updatedAt: new Date() };
+  }
   const baseSlug = slugify(params.slug || params.name);
   const slug = await ensureUniqueSlug(baseSlug);
 
@@ -85,6 +89,9 @@ export interface UpdateOrganizationParams {
 }
 
 export async function updateOrganization(params: UpdateOrganizationParams) {
+  if (isDemo) {
+    return { ...params, updatedAt: new Date() } as any;
+  }
   const { id, ...data } = params;
   return prisma.organization.update({
     where: { id },
@@ -101,10 +108,16 @@ export async function updateOrganization(params: UpdateOrganizationParams) {
 }
 
 export async function getOrganizationBySlug(slug: string) {
+  if (isDemo) {
+    return { id: "demo-org-001", name: "Clínica Saúde Total", slug, cnpj: "12.345.678/0001-90", logoUrl: null, primaryColor: "#7c3aed", plan: "PRO", status: "ACTIVE", settings: {}, createdAt: new Date(), updatedAt: new Date() };
+  }
   return prisma.organization.findUnique({ where: { slug } });
 }
 
 export async function listMemberships(userId: string) {
+  if (isDemo) {
+    return [{ id: "mem-1", organizationId: "demo-org-001", userId, role: "OWNER", status: "ACTIVE", createdAt: new Date(), organization: { id: "demo-org-001", name: "Clínica Saúde Total", slug: "clinica-saude-total", logoUrl: null, primaryColor: "#7c3aed" } }];
+  }
   return prisma.organizationMember.findMany({
     where: { userId },
     include: { organization: true },

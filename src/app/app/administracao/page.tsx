@@ -53,10 +53,10 @@ export default async function AdminPageRoute() {
     <AdminPage
       organizationId={orgId}
       initialRole={current.role}
-      initialMembers={members}
-      initialSpecialties={specialties}
-      initialRooms={rooms}
-      initialProfessionals={professionals}
+      initialMembers={members as any}
+      initialSpecialties={specialties as any}
+      initialRooms={rooms as any}
+      initialProfessionals={professionals as any}
       initialAuditLogs={auditLogs}
     />
   );

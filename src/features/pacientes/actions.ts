@@ -13,15 +13,24 @@ import {
   listPatients as listPatientsService,
 } from "@/features/pacientes/services/paciente-service";
 import type { PatientStatus } from "@/features/pacientes/types";
+import { isDemo } from "@/lib/demo";
+
+async function getMembership(userId: string) {
+  if (isDemo) {
+    return { organizationId: "demo-org-001", role: "OWNER" as const };
+  }
+  const membership = await prisma.organizationMember.findFirst({
+    where: { userId },
+  });
+  return membership;
+}
 
 export async function createPatientAction(_prev: unknown, formData: FormData) {
   try {
     const session = await requireAuth();
     const userId = (session.user as { id: string }).id;
 
-    const membership = await prisma.organizationMember.findFirst({
-      where: { userId },
-    });
+    const membership = await getMembership(userId);
     if (!membership) {
       return { success: false as const, error: "Organização não encontrada." };
     }
@@ -76,9 +85,7 @@ export async function updatePatientAction(_prev: unknown, formData: FormData) {
     const userId = (session.user as { id: string }).id;
     const patientId = formData.get("patientId") as string;
 
-    const membership = await prisma.organizationMember.findFirst({
-      where: { userId },
-    });
+    const membership = await getMembership(userId);
     if (!membership) {
       return { success: false as const, error: "Organização não encontrada." };
     }
@@ -133,26 +140,26 @@ export async function deletePatientAction(patientId: string) {
     const session = await requireAuth();
     const userId = (session.user as { id: string }).id;
 
-    const membership = await prisma.organizationMember.findFirst({
-      where: { userId },
-    });
+    const membership = await getMembership(userId);
     if (!membership) {
       return { success: false as const, error: "Organização não encontrada." };
     }
 
-    const patient = await prisma.patient.findFirst({
-      where: { id: patientId, organizationId: membership.organizationId },
-      select: { name: true },
-    });
+    if (!isDemo) {
+      const patient = await prisma.patient.findFirst({
+        where: { id: patientId, organizationId: membership.organizationId },
+        select: { name: true },
+      });
 
-    await deletePatient(membership.organizationId, patientId);
+      await deletePatient(membership.organizationId, patientId);
 
-    await recordAudit({
-      action: "patient.delete",
-      entityType: "Patient",
-      entityId: patientId,
-      metadata: { name: patient?.name },
-    });
+      await recordAudit({
+        action: "patient.delete",
+        entityType: "Patient",
+        entityId: patientId,
+        metadata: { name: patient?.name },
+      });
+    }
 
     revalidatePath("/app/pacientes");
     return { success: true as const };
@@ -172,9 +179,7 @@ export async function listPatients(params: {
   const session = await requireAuth();
   const userId = (session.user as { id: string }).id;
 
-  const membership = await prisma.organizationMember.findFirst({
-    where: { userId },
-  });
+  const membership = await getMembership(userId);
   if (!membership) {
     return { items: [], total: 0, page: 1, limit: 20, totalPages: 0 };
   }
@@ -187,9 +192,7 @@ export async function createPatientTagAction(_prev: unknown, formData: FormData)
     const session = await requireAuth();
     const userId = (session.user as { id: string }).id;
 
-    const membership = await prisma.organizationMember.findFirst({
-      where: { userId },
-    });
+    const membership = await getMembership(userId);
     if (!membership) {
       return { success: false as const, error: "Organização não encontrada." };
     }
@@ -219,9 +222,7 @@ export async function deletePatientTagAction(tagId: string) {
     const session = await requireAuth();
     const userId = (session.user as { id: string }).id;
 
-    const membership = await prisma.organizationMember.findFirst({
-      where: { userId },
-    });
+    const membership = await getMembership(userId);
     if (!membership) {
       return { success: false as const, error: "Organização não encontrada." };
     }

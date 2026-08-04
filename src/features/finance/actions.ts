@@ -19,10 +19,14 @@ import {
   deleteCategory,
   payCommissions,
 } from "@/features/finance/services/finance-service";
+import { isDemo } from "@/lib/demo";
 
 async function getOrganizationId() {
   const session = await requireAuth();
   const userId = (session.user as { id: string }).id;
+  if (isDemo) {
+    return { userId, organizationId: "demo-org-001" };
+  }
   const membership = await prisma.organizationMember.findFirst({
     where: { userId },
     select: { organizationId: true },

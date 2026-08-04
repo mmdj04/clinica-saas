@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { recordAudit } from "@/lib/audit";
+import { isDemo } from "@/lib/demo";
 
 export async function POST(request: Request) {
   try {
@@ -10,6 +11,10 @@ export async function POST(request: Request) {
 
     if (!email || typeof email !== "string") {
       return NextResponse.json({ error: "E-mail obrigatório" }, { status: 400 });
+    }
+
+    if (isDemo) {
+      return NextResponse.json({ success: true });
     }
 
     const user = await prisma.user.findUnique({

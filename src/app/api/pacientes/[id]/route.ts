@@ -8,6 +8,7 @@ import {
 } from "@/features/pacientes/services/paciente-service";
 import { recordAudit } from "@/lib/audit";
 import type { PatientStatus } from "@/features/pacientes/types";
+import { isDemo } from "@/lib/demo";
 
 export async function GET(
   _request: NextRequest,
@@ -18,17 +19,23 @@ export async function GET(
     const userId = (session.user as { id: string }).id;
     const { id } = await params;
 
-    const membership = await prisma.organizationMember.findFirst({
-      where: { userId },
-    });
-    if (!membership) {
-      return NextResponse.json(
-        { error: "Organização não encontrada" },
-        { status: 403 },
-      );
+    let orgId: string;
+    if (isDemo) {
+      orgId = "demo-org-001";
+    } else {
+      const membership = await prisma.organizationMember.findFirst({
+        where: { userId },
+      });
+      if (!membership) {
+        return NextResponse.json(
+          { error: "Organização não encontrada" },
+          { status: 403 },
+        );
+      }
+      orgId = membership.organizationId;
     }
 
-    const patient = await getPatientById(membership.organizationId, id);
+    const patient = await getPatientById(orgId, id);
     if (!patient) {
       return NextResponse.json(
         { error: "Paciente não encontrado" },
@@ -51,6 +58,13 @@ export async function PATCH(
     const session = await requireAuth();
     const userId = (session.user as { id: string }).id;
     const { id } = await params;
+
+    if (isDemo) {
+      return NextResponse.json(
+        { error: "Modo demo não permite escrita" },
+        { status: 403 },
+      );
+    }
 
     const membership = await prisma.organizationMember.findFirst({
       where: { userId },
@@ -110,6 +124,13 @@ export async function DELETE(
     const session = await requireAuth();
     const userId = (session.user as { id: string }).id;
     const { id } = await params;
+
+    if (isDemo) {
+      return NextResponse.json(
+        { error: "Modo demo não permite escrita" },
+        { status: 403 },
+      );
+    }
 
     const membership = await prisma.organizationMember.findFirst({
       where: { userId },

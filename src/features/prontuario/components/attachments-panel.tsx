@@ -107,7 +107,7 @@ export function AttachmentsPanel({ patientId }: AttachmentsPanelProps) {
                     </p>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Badge variant="secondary" className="text-[10px]">
-                        {CATEGORY_LABELS[attachment.category]}
+                        {CATEGORY_LABELS[attachment.category as AttachmentCategory] ?? attachment.category}
                       </Badge>
                       <span>{formatFileSize(attachment.size)}</span>
                       <span>•</span>

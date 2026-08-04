@@ -29,15 +29,27 @@ async function ensurePrisma(): Promise<PrismaClient> {
   return globalForPrisma.prisma;
 }
 
-export const prisma = new Proxy({} as PrismaClient, {
-  get(_, prop) {
-    return (...args: any[]) =>
-      ensurePrisma().then((client) => {
-        const val = (client as any)[prop];
-        return typeof val === "function" ? val.apply(client, args) : val;
-      });
-  },
-});
+function createProxy(target: any): any {
+  return new Proxy(target, {
+    get(_, prop) {
+      if (isDemo) {
+        throw new Error("Database not available in demo mode");
+      }
+      return createProxy(
+        (...args: any[]) =>
+          ensurePrisma().then((client) => {
+            const val = (client as any)[prop];
+            return typeof val === "function" ? val.apply(client, args) : val;
+          })
+      );
+    },
+    apply(_, __, args) {
+      return target(...args);
+    },
+  });
+}
+
+export const prisma = createProxy({}) as PrismaClient;
 
 export async function prismaAdapter(client: any, opts: { provider: "postgresql" }) {
   const { prismaAdapter: adapter } = await import("better-auth/adapters/prisma");

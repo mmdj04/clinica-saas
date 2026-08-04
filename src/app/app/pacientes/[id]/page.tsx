@@ -54,5 +54,5 @@ export default async function PacienteDetailPage({
 
   if (!patient) notFound();
 
-  return <PacienteDetailServer patient={patient} />;
+  return <PacienteDetailServer patient={patient as any} />;
 }

@@ -169,6 +169,15 @@ export async function getCategoryBreakdown(
   range: DateRange,
   type?: "REVENUE" | "EXPENSE",
 ): Promise<CategoryBreakdown[]> {
+  if (isDemo) {
+    return [
+      { name: "Consultas", color: "#7c3aed", total: 12500, count: 25 },
+      { name: "Procedimentos", color: "#0ea5e9", total: 8300, count: 15 },
+      { name: "Aluguel", color: "#ef4444", total: 3500, count: 1 },
+      { name: "Material", color: "#f59e0b", total: 1200, count: 8 },
+    ].filter((c) => !type || (type === "REVENUE" ? c.total > 0 && c.name !== "Aluguel" && c.name !== "Material" : c.name === "Aluguel" || c.name === "Material"));
+  }
+
   const where: Prisma.TransactionWhereInput = {
     ...tenantWhere(organizationId),
     date: { gte: range.from, lte: range.to },
@@ -208,6 +217,19 @@ export async function getMonthlyData(
   organizationId: string,
   months: number = 6,
 ): Promise<MonthlyData[]> {
+  if (isDemo) {
+    const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const now = new Date();
+    return Array.from({ length: months }, (_, i) => {
+      const d = new Date(now.getFullYear(), now.getMonth() - months + 1 + i, 1);
+      return {
+        month: `${monthNames[d.getMonth()]}/${String(d.getFullYear()).slice(2)}`,
+        receita: Math.floor(Math.random() * 15000) + 8000,
+        despesa: Math.floor(Math.random() * 5000) + 3000,
+      };
+    });
+  }
+
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth() - months + 1, 1);
   const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
@@ -276,6 +298,9 @@ export async function createCategory(
   organizationId: string,
   data: { name: string; type: "REVENUE" | "EXPENSE"; color: string },
 ) {
+  if (isDemo) {
+    return { id: `cat-${Date.now()}`, organizationId, ...data };
+  }
   return prisma.financeCategory.create({
     data: { organizationId, ...data },
   });
@@ -286,6 +311,9 @@ export async function updateCategory(
   organizationId: string,
   data: { name?: string; color?: string },
 ) {
+  if (isDemo) {
+    return { id, organizationId, name: data.name ?? "Categoria", type: "REVENUE" as const, color: data.color ?? "#7c3aed" };
+  }
   return prisma.financeCategory.update({
     where: { id, organizationId },
     data,
@@ -293,6 +321,9 @@ export async function updateCategory(
 }
 
 export async function deleteCategory(id: string, organizationId: string) {
+  if (isDemo) {
+    return { id, organizationId, name: "Deleted", type: "REVENUE" as const, color: "#ccc" };
+  }
   return prisma.financeCategory.delete({
     where: { id, organizationId },
   });
@@ -302,6 +333,9 @@ export async function createTransaction(
   organizationId: string,
   data: Omit<Prisma.TransactionUncheckedCreateInput, "organizationId">,
 ) {
+  if (isDemo) {
+    return { id: `txn-${Date.now()}`, organizationId, ...data, createdAt: new Date() } as any;
+  }
   const created = await prisma.transaction.create({
     data: { organizationId, ...data },
   });
@@ -332,6 +366,9 @@ export async function updateTransaction(
   organizationId: string,
   data: Prisma.TransactionUpdateInput,
 ) {
+  if (isDemo) {
+    return { id, organizationId, ...data } as any;
+  }
   return prisma.transaction.update({
     where: { id, organizationId },
     data,
@@ -339,6 +376,9 @@ export async function updateTransaction(
 }
 
 export async function deleteTransaction(id: string, organizationId: string) {
+  if (isDemo) {
+    return { id, organizationId } as any;
+  }
   return prisma.transaction.delete({
     where: { id, organizationId },
   });
@@ -348,6 +388,13 @@ export async function listCommissions(
   organizationId: string,
   status?: "PENDING" | "PAID",
 ): Promise<CommissionWithProfessional[]> {
+  if (isDemo) {
+    const mock = [
+      { id: "comm-1", organizationId, transactionId: "txn-1", professionalId: "pr-1", rate: 0.1 as any, amount: 75 as any, status: "PENDING" as const, createdAt: new Date(), paidAt: null, professional: { id: "pr-1", name: "Dra. Maria Silva" }, transaction: { id: "txn-1", description: "Consulta", amount: 750 as any, date: new Date() } },
+      { id: "comm-2", organizationId, transactionId: "txn-2", professionalId: "pr-2", rate: 0.15 as any, amount: 120 as any, status: "PAID" as const, createdAt: new Date(), paidAt: new Date(), professional: { id: "pr-2", name: "Dr. João Santos" }, transaction: { id: "txn-2", description: "Procedimento", amount: 800 as any, date: new Date() } },
+    ];
+    return (status ? mock.filter((c) => c.status === status) : mock) as CommissionWithProfessional[];
+  }
   return prisma.commission.findMany({
     where: {
       organizationId,
@@ -365,6 +412,9 @@ export async function payCommissions(
   commissionIds: string[],
   organizationId: string,
 ) {
+  if (isDemo) {
+    return { count: commissionIds.length };
+  }
   return prisma.commission.updateMany({
     where: {
       id: { in: commissionIds },

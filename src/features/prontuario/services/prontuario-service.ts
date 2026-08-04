@@ -165,6 +165,9 @@ export async function upsertAnamnesis(
   patientId: string,
   content: AnamnesisContent,
 ) {
+  if (isDemo) {
+    return { id: "anam-1", organizationId: "demo-org-001", patientId, professionalId: "pr-1", content, version: 1, createdAt: new Date(), updatedAt: new Date() };
+  }
   const organizationId = requireOrgId();
   const userId = requireUserId();
 
@@ -238,6 +241,20 @@ export async function createEvolution(data: {
   type: EvolutionType;
   content: string;
 }) {
+  if (isDemo) {
+    return {
+      id: `evo-${Date.now()}`,
+      organizationId: "demo-org-001",
+      patientId: data.patientId,
+      appointmentId: data.appointmentId || null,
+      professionalId: "pr-1",
+      type: data.type,
+      content: data.content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      professional: { id: "pr-1", name: "Dra. Maria Silva" },
+    };
+  }
   const organizationId = requireOrgId();
   const userId = requireUserId();
 
@@ -291,6 +308,20 @@ export async function createPrescription(data: {
   guidelines?: string;
   validDays?: number;
 }) {
+  if (isDemo) {
+    return {
+      id: `rx-${Date.now()}`,
+      organizationId: "demo-org-001",
+      patientId: data.patientId,
+      professionalId: "pr-1",
+      items: data.items,
+      guidelines: data.guidelines ?? "",
+      validDays: data.validDays ?? 10,
+      issuedAt: new Date(),
+      createdAt: new Date(),
+      professional: { id: "pr-1", name: "Dra. Maria Silva" },
+    };
+  }
   const organizationId = requireOrgId();
   const userId = requireUserId();
 
@@ -347,6 +378,23 @@ export async function createExam(data: {
   summary?: string;
   status?: ExamStatus;
 }) {
+  if (isDemo) {
+    return {
+      id: `exam-${Date.now()}`,
+      organizationId: "demo-org-001",
+      patientId: data.patientId,
+      professionalId: data.professionalId || "pr-1",
+      name: data.name,
+      category: data.category ?? "",
+      fileUrl: null,
+      orderedAt: data.orderedAt ? new Date(data.orderedAt) : new Date(),
+      resultDate: null,
+      summary: data.summary ?? "",
+      status: data.status ?? "ordered",
+      createdAt: new Date(),
+      professional: { id: "pr-1", name: "Dra. Maria Silva" },
+    };
+  }
   const organizationId = requireOrgId();
   const userId = requireUserId();
 
@@ -368,6 +416,25 @@ export async function createExam(data: {
 // ─── Attachments ──────────────────────────────────────────────
 
 export async function listAttachments(patientId: string) {
+  if (isDemo) {
+    return [
+      {
+        id: "att-1",
+        organizationId: "demo-org-001",
+        patientId,
+        appointmentId: null,
+        uploadedById: "pr-1",
+        name: "exame_sangue.pdf",
+        fileUrl: "#",
+        mimeType: "application/pdf",
+        size: 245000,
+        category: "LABORATORY",
+        notes: "",
+        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+        uploadedBy: { id: "pr-1", name: "Dra. Maria Silva" },
+      },
+    ];
+  }
   const organizationId = requireOrgId();
   return prisma.attachment.findMany({
     where: { patientId, organizationId },
@@ -386,6 +453,23 @@ export async function createAttachment(data: {
   category?: AttachmentCategory;
   notes?: string;
 }) {
+  if (isDemo) {
+    return {
+      id: `att-${Date.now()}`,
+      organizationId: "demo-org-001",
+      patientId: data.patientId,
+      appointmentId: data.appointmentId || null,
+      uploadedById: "pr-1",
+      name: data.name,
+      fileUrl: data.fileUrl,
+      mimeType: data.mimeType,
+      size: data.size,
+      category: data.category ?? "OTHER",
+      notes: data.notes ?? "",
+      createdAt: new Date(),
+      uploadedBy: { id: "pr-1", name: "Dra. Maria Silva" },
+    };
+  }
   const organizationId = requireOrgId();
   const userId = requireUserId();
 
@@ -409,6 +493,9 @@ export async function createAttachment(data: {
 // ─── Stats ────────────────────────────────────────────────────
 
 export async function getPatientStats(patientId: string) {
+  if (isDemo) {
+    return { totalVisits: 5, totalEvolutions: 2, totalPrescriptions: 1, totalExams: 1, totalAttachments: 1 };
+  }
   const organizationId = requireOrgId();
 
   const [totalVisits, totalEvolutions, totalPrescriptions, totalExams, totalAttachments] =
